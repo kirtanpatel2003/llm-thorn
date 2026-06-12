@@ -1,0 +1,89 @@
+# Thorn policy template: Coding Assistant
+#
+# Threat model: secret/credential exfiltration via prompt context (API keys
+# pasted into code), malicious code suggestions planted via indirect
+# injection (poisoned docs, READMEs, issue text the assistant is asked to
+# summarize), and system context extraction.
+#
+# Philosophy: FAILS OPEN with HIGHER blocking thresholds. Developers paste
+# wild things into coding assistants all day — strings full of "system:",
+# base64 blobs, regex that looks like attacks. Aggressive blocking here
+# destroys the product. We bias toward warn + audit, and reserve blocks for
+# high-confidence detections and compromised outputs.
+
+policy:
+  name: coding-assistant
+  version: 1.0.0
+  description: >
+    Protects a code assistant against indirect injection and secret leakage
+    while staying out of developers' way: high thresholds, fail-open.
+
+  layers:
+    heuristic: true
+    semantic: true
+    context: true
+    output: true
+
+  rules:
+    # Note the 0.9 threshold — code snippets legitimately contain strings
+    # like "ignore previous instructions" in test fixtures and docs.
+    - id: block-unambiguous-attacks
+      description: Block only the highest-confidence signature matches.
+      layer: heuristic
+      condition:
+        verdict: malicious
+        confidence_above: 0.9
+      action: block
+      alert: true
+
+    - id: warn-probable-attacks
+      description: Audit-log everything else suspicious instead of blocking.
+      layer: heuristic
+      condition:
+        verdict: suspicious
+        confidence_above: 0.6
+      action: warn
+
+    - id: block-malicious-intent
+      description: The intent classifier sees through "it's just a test fixture".
+      layer: semantic
+      condition:
+        verdict: malicious
+        confidence_above: 0.85
+      action: block
+      alert: true
+
+    - id: block-escalating-sessions
+      description: Multi-turn extraction attempts still get blocked.
+      layer: context
+      condition:
+        verdict: malicious
+        confidence_above: 0.7
+      action: block
+      alert: true
+
+    # Compromised output is where we do NOT relax: a poisoned dependency
+    # README that makes the assistant suggest curl|bash is the nightmare.
+    - id: block-compromised-output
+      description: Block responses showing successful (indirect) injection.
+      layer: output
+      condition:
+        verdict: malicious
+        confidence_above: 0.8
+      action: block
+      alert: true
+
+    # Keys and credentials get redacted from responses — the answer is
+    # usually still useful without the literal secret echoed back.
+    - id: redact-secrets-in-output
+      description: Redact API-key-shaped strings and PII from responses.
+      layer: output
+      condition:
+        verdict: suspicious
+        confidence_above: 0.5
+      action: redact
+
+  defaults:
+    on_layer_error: allow      # fail-open: developer productivity
+    max_session_turns: 100     # long pairing sessions are normal
+    session_ttl_seconds: 7200

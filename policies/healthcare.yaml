@@ -1,0 +1,97 @@
+# Thorn policy template: Healthcare Assistant
+#
+# Threat model: PHI exfiltration, off-scope medical advice elicitation,
+# impersonation of medical professionals, and training-data extraction.
+#
+# Philosophy: in healthcare, a wrong answer can hurt someone. This template
+# FAILS CLOSED — if any detection layer errors, the request is blocked until
+# the stack is healthy again. Safety beats uptime here, and the tamper-evident
+# audit log doubles as compliance evidence.
+
+policy:
+  name: healthcare
+  version: 1.0.0
+  description: >
+    Protects a healthcare-domain assistant with fail-closed error handling,
+    aggressive blocking thresholds, and PII/PHI redaction on every response.
+
+  layers:
+    heuristic: true
+    semantic: true
+    context: true
+    output: true
+
+  rules:
+    # Lower threshold than other templates: in this domain we accept more
+    # false positives in exchange for fewer misses.
+    - id: block-known-attacks
+      description: Block signature matches at moderate confidence.
+      layer: heuristic
+      condition:
+        verdict: malicious
+        confidence_above: 0.7
+      action: block
+      alert: true
+
+    - id: block-suspicious-signatures
+      description: Even soft signature matches are blocked in this domain.
+      layer: heuristic
+      condition:
+        verdict: suspicious
+        confidence_above: 0.65
+      action: block
+      alert: true
+
+    - id: block-malicious-intent
+      description: Block inputs the intent classifier flags as attacks.
+      layer: semantic
+      condition:
+        verdict: malicious
+        confidence_above: 0.7
+      action: block
+      alert: true
+
+    # Impersonation attempts ("as your supervising physician...") build
+    # session risk through the context layer's authority-claim signals.
+    - id: block-escalating-sessions
+      description: Block sessions trending toward manipulation.
+      layer: context
+      condition:
+        verdict: suspicious
+        confidence_above: 0.6
+      action: block
+      alert: true
+
+    - id: terminate-attack-sessions
+      description: Terminate clearly hostile sessions.
+      layer: context
+      condition:
+        verdict: malicious
+        confidence_above: 0.6
+      action: terminate_session
+      alert: true
+
+    - id: block-compromised-output
+      description: Block leaked prompts and successful injections.
+      layer: output
+      condition:
+        verdict: malicious
+        confidence_above: 0.7
+      action: block
+      alert: true
+
+    # PHI never leaves through a model response. The block (not redact)
+    # choice is deliberate: redaction signals to an attacker what was found.
+    - id: block-phi-in-output
+      description: Block responses containing PII/PHI patterns.
+      layer: output
+      condition:
+        verdict: suspicious
+        confidence_above: 0.5
+      action: block
+      alert: true
+
+  defaults:
+    on_layer_error: block      # fail-closed: safety beats uptime
+    max_session_turns: 30
+    session_ttl_seconds: 1800

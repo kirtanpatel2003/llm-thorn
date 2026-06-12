@@ -1,0 +1,100 @@
+# Thorn policy template: Fintech Assistant
+#
+# Threat model: account data exfiltration, social engineering of the AI into
+# unauthorized financial advice or transaction-logic bypasses, and probing
+# for internal business rules.
+#
+# Philosophy: FAILS CLOSED, short sessions. Financial conversations are
+# transactional — a legitimate user finishes in a handful of turns, so
+# max_session_turns is capped at 20. Long, meandering sessions in this
+# domain are themselves a signal.
+
+policy:
+  name: fintech
+  version: 1.0.0
+  description: >
+    Protects a financial-services assistant with fail-closed error handling,
+    tight session limits, and blocking on both data leakage and trajectory risk.
+
+  rules:
+    - id: block-known-attacks
+      description: Block signature matches at moderate confidence.
+      layer: heuristic
+      condition:
+        verdict: malicious
+        confidence_above: 0.75
+      action: block
+      alert: true
+
+    - id: warn-soft-signatures
+      description: Log soft matches; finance jargon rarely trips signatures.
+      layer: heuristic
+      condition:
+        verdict: suspicious
+        confidence_above: 0.5
+      action: warn
+      alert: true
+
+    - id: block-malicious-intent
+      description: Block what the intent classifier flags — social engineering
+        against transaction logic rarely matches static patterns.
+      layer: semantic
+      condition:
+        verdict: malicious
+        confidence_above: 0.75
+      action: block
+      alert: true
+
+    - id: block-suspicious-intent-on-risky-sessions
+      description: On already-risky sessions, suspicious intent is enough.
+      layer: semantic
+      condition:
+        verdict: suspicious
+        confidence_above: 0.7
+        session_risk_above: 3.0
+      action: block
+      alert: true
+
+    - id: block-escalating-sessions
+      description: Block sessions whose trajectory indicates manipulation.
+      layer: context
+      condition:
+        verdict: malicious
+        confidence_above: 0.6
+      action: block
+      alert: true
+
+    - id: terminate-probing-sessions
+      description: Terminate sessions that probe past the block threshold.
+      layer: context
+      condition:
+        verdict: malicious
+        confidence_above: 0.6
+        session_risk_above: 8.0
+      action: terminate_session
+      alert: true
+
+    - id: block-compromised-output
+      description: Block leaked prompts and successful injections.
+      layer: output
+      condition:
+        verdict: malicious
+        confidence_above: 0.75
+      action: block
+      alert: true
+
+    # Account numbers, card numbers, SSNs in responses: block, alert,
+    # investigate. Redaction is not enough when money is involved.
+    - id: block-account-data-in-output
+      description: Block responses containing financial PII patterns.
+      layer: output
+      condition:
+        verdict: suspicious
+        confidence_above: 0.5
+      action: block
+      alert: true
+
+  defaults:
+    on_layer_error: block      # fail-closed
+    max_session_turns: 20      # financial sessions are short by nature
+    session_ttl_seconds: 900

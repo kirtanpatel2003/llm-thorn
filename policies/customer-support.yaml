@@ -1,0 +1,100 @@
+# Thorn policy template: Customer Support Assistant
+#
+# Threat model: jailbreaks that break the bot's character, PII exfiltration
+# through chat, prompt extraction, and multi-turn social engineering.
+#
+# Philosophy: customer support is uptime-sensitive. A support bot that goes
+# down costs money every minute, so this template FAILS OPEN — if a detection
+# layer errors (e.g. Ollama is restarting), traffic keeps flowing while the
+# remaining layers still run. Flip on_layer_error to `block` if your support
+# bot handles account data.
+
+policy:
+  name: customer-support
+  version: 1.0.0
+  description: >
+    Protects a customer-facing support assistant against character breaking,
+    prompt extraction, PII leakage, and multi-turn manipulation.
+
+  layers:
+    heuristic: true
+    semantic: true        # requires a local Ollama; disable if unavailable
+    context: true
+    output: true
+
+  rules:
+    # Clear signature attacks are blocked outright.
+    - id: block-known-attacks
+      description: Block inputs matching high-confidence attack signatures.
+      layer: heuristic
+      condition:
+        verdict: malicious
+        confidence_above: 0.8
+      action: block
+      alert: true
+
+    # Softer signature matches are logged but allowed — support traffic is
+    # full of innocent phrasing that brushes against patterns.
+    - id: warn-soft-signatures
+      description: Log low-confidence signature matches for tuning.
+      layer: heuristic
+      condition:
+        verdict: suspicious
+        confidence_above: 0.5
+      action: warn
+
+    # The semantic layer catches intent the patterns miss.
+    - id: block-malicious-intent
+      description: Block inputs the intent classifier flags with high confidence.
+      layer: semantic
+      condition:
+        verdict: malicious
+        confidence_above: 0.8
+      action: block
+      alert: true
+
+    # Multi-turn social engineering: block once the trajectory is clear.
+    - id: block-escalating-sessions
+      description: Block sessions whose accumulated risk indicates probing.
+      layer: context
+      condition:
+        verdict: malicious
+        confidence_above: 0.6
+      action: block
+      alert: true
+
+    # Sessions that keep pushing after blocks get terminated.
+    - id: terminate-persistent-attackers
+      description: Kill sessions with very high accumulated risk.
+      layer: context
+      condition:
+        verdict: malicious
+        confidence_above: 0.6
+        session_risk_above: 9.0
+      action: terminate_session
+      alert: true
+
+    # If the model leaks its prompt or breaks character, never deliver it.
+    - id: block-compromised-output
+      description: Block responses showing successful injection or prompt leakage.
+      layer: output
+      condition:
+        verdict: malicious
+        confidence_above: 0.8
+      action: block
+      alert: true
+
+    # PII in responses gets redacted, not blocked — the rest of the answer
+    # is usually still useful to the customer.
+    - id: redact-pii-in-responses
+      description: Strip emails, phone numbers, SSNs, and card numbers from output.
+      layer: output
+      condition:
+        verdict: suspicious
+        confidence_above: 0.5
+      action: redact
+
+  defaults:
+    on_layer_error: allow      # fail-open: uptime matters for support
+    max_session_turns: 50
+    session_ttl_seconds: 3600
