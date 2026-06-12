@@ -2,7 +2,7 @@
 
 **Runtime semantic security layer for LLM applications — the WAF for the AI era.**
 
-[![PyPI version](https://img.shields.io/pypi/v/thorn)](https://pypi.org/project/thorn/)
+[![PyPI version](https://img.shields.io/pypi/v/llm-thorn)](https://pypi.org/project/llm-thorn/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![CI](https://github.com/kirtanpatel2003/thorn/actions/workflows/ci.yml/badge.svg)](https://github.com/kirtanpatel2003/thorn/actions/workflows/ci.yml)
@@ -53,7 +53,7 @@ you want them.
 ## Quickstart
 
 ```bash
-pip install thorn
+pip install llm-thorn
 
 thorn start --policy policies/customer-support.yaml --upstream https://api.openai.com
 ```

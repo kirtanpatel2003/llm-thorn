@@ -1,0 +1,10 @@
+# Default owner for everything — review required on all PRs once branch
+# protection enables "require review from code owners".
+* @kirtanpatel2003
+
+# Security-critical paths: flag explicitly so ownership survives future
+# delegation of docs/policies to other maintainers.
+/thorn/core/audit.py @kirtanpatel2003
+/thorn/policy/ @kirtanpatel2003
+/thorn/layers/base.py @kirtanpatel2003
+/.github/workflows/ @kirtanpatel2003

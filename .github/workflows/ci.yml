@@ -6,33 +6,91 @@ on:
   pull_request:
     branches: [main]
 
+# Each job below surfaces as a separate status check on GitHub, so branch
+# protection can require them individually and a failure tells you at a
+# glance *what* broke — lint vs tests vs packaging vs detection regression.
+
 jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - run: uv sync
+      - run: uv run ruff check .
+
+  format:
+    name: format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - run: uv sync
+      - run: uv run ruff format --check .
+
   test:
+    name: test
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.11", "3.12"]
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - run: uv sync
+      - run: uv run pytest tests/unit tests/integration -q
 
-      - name: Install dependencies
-        run: uv sync
+  # The adversarial suite runs the non-semantic layer stack (heuristic +
+  # context + output) — no Ollama required — so it gates every commit:
+  # a known attack regressing to undetected fails CI.
+  adversarial:
+    name: adversarial-regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - run: uv sync
+      - run: uv run pytest tests/adversarial -q
 
-      - name: Lint
-        run: uv run ruff check .
+  policies:
+    name: policy-templates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - run: uv sync
+      - name: Validate every shipped policy template
+        run: |
+          uv run python - <<'EOF'
+          from pathlib import Path
+          from thorn.policy import load_policy
+          templates = sorted(Path("policies").glob("*.yaml"))
+          assert templates, "no policy templates found"
+          for template in templates:
+              policy = load_policy(template)
+              print(f"OK {template} ({policy.name} v{policy.version}, {len(policy.rules)} rules)")
+          EOF
 
-      - name: Format check
-        run: uv run ruff format --check .
-
-      # Adversarial tests are intentionally excluded: they are tuned for
-      # the full local stack (and future Ollama-dependent samples) and run
-      # locally before every release instead.
-      - name: Tests
-        run: uv run pytest tests/unit tests/integration -q
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.11"
+      - run: uv build
+      - name: Check distribution metadata
+        run: uvx twine check dist/*

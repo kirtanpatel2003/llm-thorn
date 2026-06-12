@@ -143,7 +143,7 @@ def test_clean_input_passes():
 name = "thorn-secret-scan"          # convention: thorn-<layer-name>
 version = "0.1.0"
 requires-python = ">=3.11"
-dependencies = ["thorn>=0.1"]
+dependencies = ["llm-thorn>=0.1"]
 ```
 
 ```bash

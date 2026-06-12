@@ -1,5 +1,5 @@
 [project]
-name = "thorn"
+name = "llm-thorn"
 version = "0.1.0"
 description = "Runtime semantic security layer for LLM-powered applications. The WAF for the AI era."
 readme = "README.md"

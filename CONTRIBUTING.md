@@ -100,7 +100,7 @@ class EmojiGuardLayer(BaseLayer):
    for the pattern, and the reference plugin in
    [plugins/example/](plugins/example/) for a complete worked example.
 6. **Publish to PyPI as `thorn-<your-layer-name>`** with
-   `dependencies = ["thorn>=0.1"]`.
+   `dependencies = ["llm-thorn>=0.1"]`.
 7. **Submit to the community registry**: open a PR adding one row to the
    plugin table in the README.
 

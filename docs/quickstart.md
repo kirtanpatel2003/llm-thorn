@@ -5,9 +5,9 @@ From zero to a running, attack-blocking proxy in about five minutes.
 ## 1. Install
 
 ```bash
-pip install thorn
+pip install llm-thorn
 # or, in a uv project:
-uv add thorn
+uv add llm-thorn
 ```
 
 Requires Python 3.11+.

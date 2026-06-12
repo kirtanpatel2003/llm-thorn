@@ -58,7 +58,7 @@ print(layer.inspect_input(request))   # benign — "orders" topic matched
    [project]
    name = "thorn-topic-guard"
    version = "0.1.0"
-   dependencies = ["thorn>=0.1"]
+   dependencies = ["llm-thorn>=0.1"]
    ```
 
 4. **Test it** against `LLMRequest` fixtures (see

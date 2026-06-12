@@ -7,6 +7,17 @@ interface only changes on major versions.
 
 ## [Unreleased]
 
+### Added
+
+- CI restructured into independent status checks (lint, format, test on
+  3.11/3.12, adversarial-regression, policy-templates, build) so branch
+  protection can require each individually.
+- Security workflows: weekly + per-commit dependency CVE audit (pip-audit),
+  full-history secret scanning (gitleaks), CodeQL analysis, and PR
+  dependency review.
+- The adversarial regression suite now gates every commit in CI (it runs
+  the non-semantic stack, so no Ollama is needed).
+
 ## [0.1.0] — 2026-06-12
 
 Initial release.

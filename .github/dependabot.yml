@@ -1,0 +1,31 @@
+# Dependabot: automated dependency updates + security patches.
+# Security updates open PRs immediately when a CVE matching a locked
+# dependency is published; version updates batch weekly to limit noise.
+
+version: 2
+updates:
+  # Python dependencies (uv.lock + pyproject.toml)
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    groups:
+      # One PR for routine bumps instead of ten; security PRs stay separate.
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+    labels:
+      - "dependencies"
+
+  # The actions used in CI workflows are dependencies too — pin drift and
+  # compromised tags are a real supply-chain vector.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "ci"
