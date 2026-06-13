@@ -2,11 +2,11 @@
 
 Commands::
 
-    thorn start --policy ./policy.yaml --upstream https://api.openai.com
-    thorn audit verify --db ./thorn.db
-    thorn audit report --db ./thorn.db --last 24h
-    thorn audit report --db ./thorn.db --session <session_id>
-    thorn version
+    llm-thorn start --policy ./policy.yaml --upstream https://api.openai.com
+    llm-thorn audit verify --db ./thorn.db
+    llm-thorn audit report --db ./thorn.db --last 24h
+    llm-thorn audit report --db ./thorn.db --session <session_id>
+    llm-thorn version
 """
 
 from __future__ import annotations
@@ -22,13 +22,13 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
-import thorn
-from thorn.backends import BACKENDS
-from thorn.core.audit import AuditLog
-from thorn.policy.schema import PolicyError, load_policy
+import llm_thorn
+from llm_thorn.backends import BACKENDS
+from llm_thorn.core.audit import AuditLog
+from llm_thorn.policy.schema import PolicyError, load_policy
 
 app = typer.Typer(
-    name="thorn",
+    name="llm-thorn",
     help="Runtime semantic security layer for LLM applications.",
     no_args_is_help=True,
 )
@@ -63,7 +63,7 @@ def start(
     """Start the Thorn reverse proxy (Mode 1)."""
     import uvicorn
 
-    from thorn.core.proxy import create_app
+    from llm_thorn.core.proxy import create_app
 
     if backend not in BACKENDS:
         err_console.print(
@@ -79,7 +79,7 @@ def start(
 
     backend_instance = BACKENDS[backend](upstream)
     console.print(
-        f"[green]thorn[/green] starting: policy=[bold]{loaded.name}[/bold] "
+        f"[green]llm-thorn[/green] starting: policy=[bold]{loaded.name}[/bold] "
         f"v{loaded.version}, backend={backend}, upstream={upstream}"
     )
     console.print(f"point your client base_url at [bold]http://{host}:{port}[/bold]")
@@ -187,7 +187,7 @@ def report(
 @app.command()
 def version() -> None:
     """Print the installed Thorn version."""
-    console.print(f"thorn {thorn.__version__}")
+    console.print(f"llm-thorn {llm_thorn.__version__}")
 
 
 def _parse_window(value: str) -> timedelta | None:

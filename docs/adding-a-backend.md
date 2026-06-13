@@ -6,7 +6,7 @@ is provider-agnostic — layers only ever see normalized `LLMRequest` /
 forwarding.
 
 The contract is `AbstractBackend` in
-[thorn/backends/base.py](../thorn/backends/base.py): two properties, two
+[llm_thorn/backends/base.py](../llm_thorn/backends/base.py): two properties, two
 normalizers, and an optional transport override.
 
 ## Step 1 — Subclass `AbstractBackend`
@@ -15,12 +15,12 @@ A complete backend for a hypothetical provider whose chat endpoint is
 `POST /v2/converse` with `{"model", "dialog": [{"speaker", "text"}]}`:
 
 ```python
-"""thorn/backends/acme.py"""
+"""llm_thorn/backends/acme.py"""
 
 from __future__ import annotations
 
-from thorn.backends.base import AbstractBackend
-from thorn.core.models import LLMRequest, LLMResponse
+from llm_thorn.backends.base import AbstractBackend
+from llm_thorn.core.models import LLMRequest, LLMResponse
 
 _SPEAKER_TO_ROLE = {"human": "user", "bot": "assistant", "directive": "system"}
 
@@ -89,11 +89,11 @@ passed through. Override it only for providers needing special transport
 ## Step 2 — Register it
 
 ```python
-# thorn/backends/__init__.py
+# llm_thorn/backends/__init__.py
 BACKENDS["acme"] = AcmeBackend
 ```
 
-That makes `thorn start --backend acme --upstream https://api.acme.dev` work.
+That makes `llm-thorn start --backend acme --upstream https://api.acme.dev` work.
 
 ## Step 3 — Dependencies as extras
 
@@ -134,6 +134,6 @@ provider's system-prompt mechanism.
 
 ## Step 5 — Document it
 
-Add `docs/backends/<provider>.md` with: an example `thorn start`
+Add `docs/backends/<provider>.md` with: an example `llm-thorn start`
 invocation, how auth headers flow, which paths are inspected, and any
 normalization caveats. Then open the PR.

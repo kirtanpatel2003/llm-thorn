@@ -14,12 +14,12 @@ import logging
 import uuid
 from datetime import UTC, datetime
 
-from thorn.core.models import Action, LayerVerdict, PolicyDecision, Verdict
-from thorn.core.session import SessionContext
-from thorn.policy.schema import Policy, PolicyRule, RuleAction
+from llm_thorn.core.models import Action, LayerVerdict, PolicyDecision, Verdict
+from llm_thorn.core.session import SessionContext
+from llm_thorn.policy.schema import Policy, PolicyRule, RuleAction
 
-logger = logging.getLogger("thorn.policy")
-alert_logger = logging.getLogger("thorn.alerts")
+logger = logging.getLogger("llm_thorn.policy")
+alert_logger = logging.getLogger("llm_llm_thorn.alerts")
 
 #: Severity order for resolving conflicts between fired rules.
 _ACTION_SEVERITY: dict[Action, int] = {

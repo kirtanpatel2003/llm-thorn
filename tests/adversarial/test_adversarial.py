@@ -18,8 +18,8 @@ from pathlib import Path
 
 import pytest
 
-from thorn.core.models import Action, Verdict
-from thorn.core.pipeline import DetectionPipeline
+from llm_thorn.core.models import Action, Verdict
+from llm_thorn.core.pipeline import DetectionPipeline
 
 SAMPLES = json.loads((Path(__file__).parent / "samples" / "attacks.json").read_text())
 

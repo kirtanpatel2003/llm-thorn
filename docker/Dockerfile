@@ -7,7 +7,7 @@
 #   docker run -p 8080:8080 \
 #     -v $(pwd)/policies:/policies \
 #     -v thorn-data:/data \
-#     thorn start --policy /policies/customer-support.yaml \
+#     llm-thorn start --policy /policies/customer-support.yaml \
 #       --upstream https://api.openai.com \
 #       --host 0.0.0.0 --port 8080 --db /data/thorn.db
 #
@@ -21,7 +21,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 WORKDIR /app
 COPY pyproject.toml uv.lock README.md LICENSE ./
-COPY thorn ./thorn
+COPY llm_thorn ./llm_thorn
 
 # Install the project and locked dependencies into an isolated venv.
 RUN uv sync --frozen --no-dev --no-editable
@@ -39,5 +39,5 @@ USER thorn
 WORKDIR /data
 EXPOSE 8080
 
-ENTRYPOINT ["thorn"]
+ENTRYPOINT ["llm-thorn"]
 CMD ["--help"]

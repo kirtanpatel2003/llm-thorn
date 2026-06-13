@@ -43,7 +43,7 @@ sequenceDiagram
 
 ## Components
 
-### The shared pipeline (`thorn/core/pipeline.py`)
+### The shared pipeline (`llm_thorn/core/pipeline.py`)
 
 All three integration modes — reverse proxy, SDK wrapper, ASGI middleware —
 construct the same `DetectionPipeline`. The modes are thin adapters that
@@ -67,7 +67,7 @@ A layer that raises does not crash anything: the exception is logged, and
 the policy's `defaults.on_layer_error` decides fail-open (`allow` — the
 remaining layers' verdicts still count) or fail-closed (`block`).
 
-### Detection layers (`thorn/layers/`)
+### Detection layers (`llm_thorn/layers/`)
 
 | | Heuristic (L1) | Semantic (L2) | Context (L3) | Output (L4) |
 |---|---|---|---|---|
@@ -87,7 +87,7 @@ Layers are **stateless by contract** — anything per-conversation lives in
 the `SessionContext` snapshot they receive. That is what makes community
 layers safe to drop into the stack.
 
-### Policy engine (`thorn/policy/`)
+### Policy engine (`llm_thorn/policy/`)
 
 Policies are Pydantic-validated at startup (`extra="forbid"` — typos are
 startup errors, not silent no-ops). At runtime each rule reads the verdicts
@@ -99,14 +99,14 @@ several rules fire, the most severe action wins:
 terminate_session > block > redact > warn > allow
 ```
 
-### Session store (`thorn/core/session.py`)
+### Session store (`llm_thorn/core/session.py`)
 
 SQLite, two tables: `sessions` (turn count, accumulated risk, terminated
 flag) and `session_events` (the flagged-verdict history the context layer
 reads for repeat-offender weighting). Reads are on the Layer-3 hot path and
 stay under the 10ms budget: single indexed-key lookups, no joins.
 
-### Audit log (`thorn/core/audit.py`)
+### Audit log (`llm_thorn/core/audit.py`)
 
 Append-only SQLite table where each entry stores
 
@@ -116,7 +116,7 @@ chain_hash = sha256(previous_chain_hash + canonical_json(entry_without_chain_has
 
 with `GENESIS_HASH = "0" * 64` seeding the first entry. The canonical
 serialization is deterministic (sorted keys, fixed separators), so
-`thorn audit verify` can recompute the entire chain and report the exact
+`llm-thorn audit verify` can recompute the entire chain and report the exact
 entry where integrity breaks — modification, deletion, and reordering are
 all detected.
 
@@ -131,7 +131,7 @@ Request/response bodies are stored as **sha256 hashes, not plaintext** —
 the audit log proves *what happened* without becoming a second copy of your
 users' conversations.
 
-### Backends (`thorn/backends/`)
+### Backends (`llm_thorn/backends/`)
 
 Backends normalize provider wire formats into `LLMRequest`/`LLMResponse`
 **before any layer runs** (invariant 3: layers never see provider dicts).

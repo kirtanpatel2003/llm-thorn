@@ -17,7 +17,7 @@ and invalid policies fail loudly with the exact field that's wrong.
 Use one directly:
 
 ```bash
-thorn start --policy policies/customer-support.yaml --upstream https://api.openai.com
+llm-thorn start --policy policies/customer-support.yaml --upstream https://api.openai.com
 ```
 
 Or copy one as a starting point and adapt the rules.
@@ -37,7 +37,7 @@ policy:
     output: true             # Layer 4 — response inspection, <5ms
 
   plugins:                   # community layers, loaded at startup
-    - "thorn_pii_guard.PIIGuardLayer"
+    - "llm_thorn_pii_guard.PIIGuardLayer"
 
   rules:
     - id: unique-rule-id     # required, unique within the policy
@@ -49,7 +49,7 @@ policy:
         session_risk_above: 5.0   # context rules only
         turn_count_above: 3       # context rules only
       action: block          # allow | warn | block | redact | terminate_session
-      alert: true            # also emit to the thorn.alerts logger
+      alert: true            # also emit to the llm_thorn.alerts logger
 
   defaults:
     on_layer_error: block    # block = fail-closed, allow = fail-open

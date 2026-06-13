@@ -19,12 +19,12 @@ labels: layer
 ```
 
 - Which layer did you expect to catch it?
-- Verdicts Thorn actually produced (from `thorn audit report` or logs):
+- Verdicts Thorn actually produced (from `llm-thorn audit report` or logs):
 - Policy template used:
 
 ## For layer proposals: what it detects
 
 <!-- The threat, the detection approach, expected latency, and whether it
      needs I/O (=> async). Note: detection logic usually starts life as a
-     community plugin (thorn-<name> on PyPI) and gets promoted to built-in
+     community plugin (llm-thorn-<name> on PyPI) and gets promoted to built-in
      if it proves broadly useful. -->

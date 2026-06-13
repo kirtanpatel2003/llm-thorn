@@ -9,7 +9,7 @@ them — same layers, same policy, same audit log as the other modes.
 Usage::
 
     from fastapi import FastAPI
-    from thorn import ThornMiddleware
+    from llm_thorn import ThornMiddleware
 
     app = FastAPI()
     app.add_middleware(
@@ -34,10 +34,10 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 from starlette.types import ASGIApp
 
-from thorn.backends.openai import OpenAIBackend
-from thorn.core.models import Action, PolicyDecision, sha256_hex
-from thorn.core.pipeline import DetectionPipeline
-from thorn.policy.schema import Policy, load_policy
+from llm_thorn.backends.openai import OpenAIBackend
+from llm_thorn.core.models import Action, PolicyDecision, sha256_hex
+from llm_thorn.core.pipeline import DetectionPipeline
+from llm_thorn.policy.schema import Policy, load_policy
 
 SESSION_HEADER = "x-thorn-session-id"
 

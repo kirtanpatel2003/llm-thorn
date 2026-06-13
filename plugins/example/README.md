@@ -21,7 +21,7 @@ From the repo root, with the dev environment installed (`uv sync`):
 from datetime import UTC, datetime
 
 from plugins.example.layer import TopicGuardLayer
-from thorn.core.models import LLMRequest
+from llm_thorn.core.models import LLMRequest
 
 layer = TopicGuardLayer()
 
@@ -56,7 +56,7 @@ print(layer.inspect_input(request))   # benign — "orders" topic matched
 
    ```toml
    [project]
-   name = "thorn-topic-guard"
+   name = "llm-thorn-topic-guard"
    version = "0.1.0"
    dependencies = ["llm-thorn>=0.1"]
    ```
@@ -68,7 +68,7 @@ print(layer.inspect_input(request))   # benign — "orders" topic matched
 
    ```yaml
    plugins:
-     - "thorn_topic_guard.TopicGuardLayer"
+     - "llm_thorn_topic_guard.TopicGuardLayer"
 
    rules:
      - id: block-off-topic

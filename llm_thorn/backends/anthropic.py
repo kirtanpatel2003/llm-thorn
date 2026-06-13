@@ -9,8 +9,8 @@ system-prompt-leak detection) see a uniform shape.
 
 from __future__ import annotations
 
-from thorn.backends.base import AbstractBackend
-from thorn.core.models import LLMRequest, LLMResponse
+from llm_thorn.backends.base import AbstractBackend
+from llm_thorn.core.models import LLMRequest, LLMResponse
 
 
 class AnthropicBackend(AbstractBackend):

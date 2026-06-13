@@ -23,7 +23,7 @@ labels: bug
 
 ## Environment
 
-- Thorn version (`thorn version`):
+- Thorn version (`llm-thorn version`):
 - Python version:
 - OS:
 - Integration mode: proxy / SDK wrapper / middleware
@@ -33,5 +33,5 @@ labels: bug
 ## Logs
 
 ```
-# relevant output, especially any thorn.pipeline / thorn.policy log lines
+# relevant output, especially any llm_thorn.pipeline / llm_thorn.policy log lines
 ```

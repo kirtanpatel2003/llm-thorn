@@ -16,7 +16,7 @@ from datetime import UTC, datetime
 
 import httpx
 
-from thorn.core.models import LLMRequest, LLMResponse
+from llm_thorn.core.models import LLMRequest, LLMResponse
 
 
 class AbstractBackend(ABC):

@@ -7,8 +7,8 @@ import time
 
 import pytest
 
-from thorn.core.models import Verdict
-from thorn.layers.heuristic import SIGNATURES, HeuristicLayer
+from llm_thorn.core.models import Verdict
+from llm_thorn.layers.heuristic import SIGNATURES, HeuristicLayer
 
 
 @pytest.fixture

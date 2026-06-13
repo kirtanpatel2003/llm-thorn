@@ -75,7 +75,7 @@ jobs:
         run: |
           uv run python - <<'EOF'
           from pathlib import Path
-          from thorn.policy import load_policy
+          from llm_thorn.policy import load_policy
           templates = sorted(Path("policies").glob("*.yaml"))
           assert templates, "no policy templates found"
           for template in templates:

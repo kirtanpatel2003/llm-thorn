@@ -6,7 +6,7 @@ returned to the client. Entries form a hash chain: each entry stores
 modifying any entry breaks the chain, and :meth:`AuditLog.verify` detects it.
 
 This is what makes Thorn viable in regulated industries: compliance teams can
-demonstrate log integrity to auditors with ``thorn audit verify``.
+demonstrate log integrity to auditors with ``llm-thorn audit verify``.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from thorn.core.models import (
+from llm_thorn.core.models import (
     AuditEntry,
     LayerVerdict,
     PolicyDecision,

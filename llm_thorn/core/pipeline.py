@@ -24,8 +24,8 @@ import importlib
 import inspect
 import logging
 
-from thorn.core.audit import AuditLog
-from thorn.core.models import (
+from llm_thorn.core.audit import AuditLog
+from llm_thorn.core.models import (
     Action,
     LayerVerdict,
     LLMRequest,
@@ -34,16 +34,16 @@ from thorn.core.models import (
     Verdict,
     hash_body,
 )
-from thorn.core.session import SessionContext, SessionStore
-from thorn.layers.base import BaseLayer
-from thorn.layers.context import ContextLayer
-from thorn.layers.heuristic import HeuristicLayer
-from thorn.layers.output import OutputLayer, redact_pii
-from thorn.layers.semantic import SemanticLayer
-from thorn.policy.engine import PolicyEngine
-from thorn.policy.schema import LayerErrorMode, Policy, PolicyError
+from llm_thorn.core.session import SessionContext, SessionStore
+from llm_thorn.layers.base import BaseLayer
+from llm_thorn.layers.context import ContextLayer
+from llm_thorn.layers.heuristic import HeuristicLayer
+from llm_thorn.layers.output import OutputLayer, redact_pii
+from llm_thorn.layers.semantic import SemanticLayer
+from llm_thorn.policy.engine import PolicyEngine
+from llm_thorn.policy.schema import LayerErrorMode, Policy, PolicyError
 
-logger = logging.getLogger("thorn.pipeline")
+logger = logging.getLogger("llm_thorn.pipeline")
 
 #: Risk contributed to the session score by non-context layer verdicts.
 _VERDICT_RISK_CONTRIBUTION: dict[str, float] = {

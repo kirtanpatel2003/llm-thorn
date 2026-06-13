@@ -7,7 +7,7 @@ same audit log as the reverse proxy.
 Usage::
 
     import openai
-    from thorn import guard
+    from llm_thorn import guard
 
     client = guard(openai.OpenAI(), policy="./policy.yaml")
     # behaves exactly like the normal client:
@@ -29,10 +29,10 @@ import contextlib
 import uuid
 from typing import Any
 
-from thorn.backends.openai import OpenAIBackend
-from thorn.core.models import Action, PolicyDecision
-from thorn.core.pipeline import DetectionPipeline
-from thorn.policy.schema import Policy, load_policy
+from llm_thorn.backends.openai import OpenAIBackend
+from llm_thorn.core.models import Action, PolicyDecision
+from llm_thorn.core.pipeline import DetectionPipeline
+from llm_thorn.policy.schema import Policy, load_policy
 
 
 class ThornBlocked(Exception):
@@ -164,7 +164,7 @@ def _run(coro: Any) -> Any:
     raise RuntimeError(
         "thorn.guard() wraps synchronous clients and cannot be called from a "
         "running event loop. In async applications, use the reverse proxy "
-        "(thorn start) or ThornMiddleware instead."
+        "(llm-thorn start) or ThornMiddleware instead."
     )
 
 

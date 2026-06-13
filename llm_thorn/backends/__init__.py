@@ -1,9 +1,9 @@
 """LLM provider backends: normalization and forwarding."""
 
-from thorn.backends.anthropic import AnthropicBackend
-from thorn.backends.base import AbstractBackend
-from thorn.backends.ollama import OllamaBackend
-from thorn.backends.openai import OpenAIBackend
+from llm_thorn.backends.anthropic import AnthropicBackend
+from llm_thorn.backends.base import AbstractBackend
+from llm_thorn.backends.ollama import OllamaBackend
+from llm_thorn.backends.openai import OpenAIBackend
 
 #: Registry used by the CLI's ``--backend`` flag.
 BACKENDS: dict[str, type[AbstractBackend]] = {

@@ -19,11 +19,11 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
-from thorn.core.models import LayerName, LayerVerdict, LLMRequest, LLMResponse, Verdict
-from thorn.layers.base import BaseLayer
+from llm_thorn.core.models import LayerName, LayerVerdict, LLMRequest, LLMResponse, Verdict
+from llm_thorn.layers.base import BaseLayer
 
 if TYPE_CHECKING:
-    from thorn.core.session import SessionContext
+    from llm_thorn.core.session import SessionContext
 
 #: Signs that an injection succeeded: the model announcing a persona switch,
 #: confirming it will ignore its rules, or adopting jailbreak personas.

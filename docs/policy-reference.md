@@ -42,13 +42,13 @@ no verdicts, so rules targeting them never fire.
 
 List of community layers in `"importable.module.ClassName"` form. Each is
 imported at startup, instantiated with no arguments, and must subclass
-`thorn.BaseLayer` — violations are startup errors with install hints.
+`llm_thorn.BaseLayer` — violations are startup errors with install hints.
 Plugin layers run on both the input and output paths (their base-class
 defaults return benign for whichever direction they don't implement).
 
 ```yaml
 plugins:
-  - "thorn_pii_guard.PIIGuardLayer"
+  - "llm_thorn_pii_guard.PIIGuardLayer"
 ```
 
 ## `policy.rules`
@@ -62,7 +62,7 @@ Each rule reads the verdicts of one layer and maps a condition to an action.
 | `layer` | string | ✅ | — | Which layer's verdicts this rule reads: `heuristic`, `semantic`, `context`, `output`, or a plugin's `name`. |
 | `condition` | mapping | ✅ | — | When the rule fires. See below. |
 | `action` | enum | ✅ | — | `allow` \| `warn` \| `block` \| `redact` \| `terminate_session`. |
-| `alert` | bool | — | `false` | Also emit a warning to the `thorn.alerts` logger when the rule fires. |
+| `alert` | bool | — | `false` | Also emit a warning to the `llm_thorn.alerts` logger when the rule fires. |
 
 ### `rules[].condition`
 
@@ -111,7 +111,7 @@ policy:
     output: true
 
   plugins:
-    - "thorn_topic_guard.TopicGuardLayer"
+    - "llm_thorn_topic_guard.TopicGuardLayer"
 
   rules:
     # Signature attacks: block at high confidence, warn below.

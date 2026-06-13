@@ -19,7 +19,7 @@ logic errors, injection into Thorn's own components):
 
 1. **Do not open a public issue.**
 2. Use GitHub's private vulnerability reporting:
-   [Security → Report a vulnerability](https://github.com/kirtanpatel2003/thorn/security/advisories/new).
+   [Security → Report a vulnerability](https://github.com/kirtanpatel2003/llm-thorn/security/advisories/new).
 3. Include: affected version, reproduction steps, and impact assessment.
 
 You will get an acknowledgment within **72 hours** and a triage verdict

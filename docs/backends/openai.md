@@ -9,11 +9,11 @@ wire format.
 
 ```bash
 # OpenAI itself
-thorn start --policy ./policy.yaml --upstream https://api.openai.com
+llm-thorn start --policy ./policy.yaml --upstream https://api.openai.com
 
 # Any OpenAI-compatible provider — same backend, different upstream
-thorn start --policy ./policy.yaml --upstream https://api.groq.com/openai
-thorn start --policy ./policy.yaml --upstream http://localhost:8000   # vLLM
+llm-thorn start --policy ./policy.yaml --upstream https://api.groq.com/openai
+llm-thorn start --policy ./policy.yaml --upstream http://localhost:8000   # vLLM
 ```
 
 Client side, change only the base URL:

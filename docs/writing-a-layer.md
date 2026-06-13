@@ -5,7 +5,7 @@ inspects requests and/or responses and returns a verdict; the policy file
 decides what the verdict *means*. This guide builds a working layer from
 scratch and publishes it.
 
-The contract is `thorn.BaseLayer` — two optional methods and a name. It is
+The contract is `llm_thorn.BaseLayer` — two optional methods and a name. It is
 **stable within a major version**: plugins built today survive every 0.x/1.x
 minor release.
 
@@ -48,14 +48,14 @@ LayerVerdict(
 A complete secret-detection layer:
 
 ```python
-"""thorn_secret_scan/__init__.py"""
+"""llm_thorn_secret_scan/__init__.py"""
 
 from __future__ import annotations
 
 import re
 
-from thorn import BaseLayer
-from thorn.core.models import LayerVerdict, LLMRequest, LLMResponse, Verdict
+from llm_thorn import BaseLayer
+from llm_thorn.core.models import LayerVerdict, LLMRequest, LLMResponse, Verdict
 
 _SECRET_PATTERNS = {
     "aws_access_key": re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
@@ -114,8 +114,8 @@ class SecretScanLayer(BaseLayer):
 ```python
 from datetime import UTC, datetime
 
-from thorn.core.models import LLMRequest
-from thorn_secret_scan import SecretScanLayer
+from llm_thorn.core.models import LLMRequest
+from llm_llm_thorn_secret_scan import SecretScanLayer
 
 
 def _request(content: str) -> LLMRequest:
@@ -140,7 +140,7 @@ def test_clean_input_passes():
 ```toml
 # pyproject.toml
 [project]
-name = "thorn-secret-scan"          # convention: thorn-<layer-name>
+name = "llm-thorn-secret-scan"          # convention: llm-thorn-<layer-name>
 version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = ["llm-thorn>=0.1"]
@@ -155,7 +155,7 @@ uv build && uv publish
 ```yaml
 policy:
   plugins:
-    - "thorn_secret_scan.SecretScanLayer"
+    - "llm_thorn_secret_scan.SecretScanLayer"
 
   rules:
     - id: block-secrets

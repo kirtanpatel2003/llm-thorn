@@ -6,8 +6,8 @@ import json
 
 import pytest
 
-from thorn.core.models import Verdict
-from thorn.layers.semantic import SemanticLayer, _extract_json
+from llm_thorn.core.models import Verdict
+from llm_thorn.layers.semantic import SemanticLayer, _extract_json
 
 
 @pytest.fixture

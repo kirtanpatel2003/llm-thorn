@@ -8,8 +8,8 @@ from pathlib import Path
 
 import pytest
 
-from thorn.core.models import LLMRequest, LLMResponse
-from thorn.policy.schema import Policy, load_policy
+from llm_thorn.core.models import LLMRequest, LLMResponse
+from llm_thorn.policy.schema import Policy, load_policy
 
 #: A representative policy used across unit and integration tests.
 #: The semantic layer is disabled — tests must not require a running Ollama.

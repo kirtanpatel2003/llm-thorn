@@ -5,7 +5,7 @@ configured list of allowed topics. Read this file top to bottom if you are
 writing your first Thorn layer; it demonstrates every part of the plugin
 contract:
 
-  - subclassing :class:`thorn.BaseLayer`
+  - subclassing :class:`llm_thorn.BaseLayer`
   - implementing ``name`` and ``inspect_input``
   - returning well-formed :class:`LayerVerdict` objects with useful metadata
   - staying stateless (session state belongs to SessionContext)
@@ -21,11 +21,11 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
-from thorn.core.models import LayerVerdict, LLMRequest, Verdict
-from thorn.layers.base import BaseLayer
+from llm_thorn.core.models import LayerVerdict, LLMRequest, Verdict
+from llm_thorn.layers.base import BaseLayer
 
 if TYPE_CHECKING:
-    from thorn.core.session import SessionContext
+    from llm_thorn.core.session import SessionContext
 
 #: Default topic vocabulary. Each topic maps to keywords that indicate it.
 #: Real deployments pass their own topics to the constructor.
@@ -59,7 +59,7 @@ class TopicGuardLayer(BaseLayer):
     Policy usage::
 
         plugins:
-          - "thorn_topic_guard.TopicGuardLayer"
+          - "llm_thorn_topic_guard.TopicGuardLayer"
 
         rules:
           - id: block-off-topic

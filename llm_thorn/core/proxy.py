@@ -24,12 +24,12 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 
-from thorn.backends.base import AbstractBackend
-from thorn.core.models import Action, PolicyDecision, sha256_hex
-from thorn.core.pipeline import DetectionPipeline
-from thorn.policy.schema import Policy
+from llm_thorn.backends.base import AbstractBackend
+from llm_thorn.core.models import Action, PolicyDecision, sha256_hex
+from llm_thorn.core.pipeline import DetectionPipeline
+from llm_thorn.policy.schema import Policy
 
-logger = logging.getLogger("thorn.proxy")
+logger = logging.getLogger("llm_thorn.proxy")
 
 #: Header a client sets to identify its conversation session.
 SESSION_HEADER = "x-thorn-session-id"
@@ -53,8 +53,8 @@ def create_app(
 
     Example::
 
-        from thorn.policy import load_policy
-        from thorn.backends import OpenAIBackend
+        from llm_thorn.policy import load_policy
+        from llm_thorn.backends import OpenAIBackend
         app = create_app(load_policy("policy.yaml"),
                          OpenAIBackend("https://api.openai.com"))
     """

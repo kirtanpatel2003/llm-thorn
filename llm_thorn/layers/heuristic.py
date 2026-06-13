@@ -16,11 +16,11 @@ import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from thorn.core.models import LayerName, LayerVerdict, LLMRequest, Verdict
-from thorn.layers.base import BaseLayer
+from llm_thorn.core.models import LayerName, LayerVerdict, LLMRequest, Verdict
+from llm_thorn.layers.base import BaseLayer
 
 if TYPE_CHECKING:
-    from thorn.core.session import SessionContext
+    from llm_thorn.core.session import SessionContext
 
 
 @dataclass(frozen=True)

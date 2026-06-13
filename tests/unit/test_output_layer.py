@@ -6,8 +6,8 @@ import time
 
 import pytest
 
-from thorn.core.models import Verdict
-from thorn.layers.output import OutputLayer, redact_pii
+from llm_thorn.core.models import Verdict
+from llm_thorn.layers.output import OutputLayer, redact_pii
 
 SYSTEM_PROMPT = (
     "You are HelpBot, the customer support assistant for Acme Corp. "

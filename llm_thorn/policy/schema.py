@@ -142,7 +142,7 @@ class Policy(BaseModel):
             if "." not in spec:
                 raise ValueError(
                     f"plugin {spec!r} must be in 'package.ClassName' form, "
-                    "e.g. 'thorn_pii_guard.PIIGuardLayer'"
+                    "e.g. 'llm_thorn_pii_guard.PIIGuardLayer'"
                 )
         return plugins
 

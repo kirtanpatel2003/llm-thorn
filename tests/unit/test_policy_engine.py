@@ -6,10 +6,10 @@ from datetime import UTC, datetime
 
 import pytest
 
-from thorn.core.models import Action, LayerVerdict, Verdict
-from thorn.core.session import SessionContext
-from thorn.policy.engine import PolicyEngine
-from thorn.policy.schema import PolicyError, load_policy
+from llm_thorn.core.models import Action, LayerVerdict, Verdict
+from llm_thorn.core.session import SessionContext
+from llm_thorn.policy.engine import PolicyEngine
+from llm_thorn.policy.schema import PolicyError, load_policy
 
 
 def _verdict(

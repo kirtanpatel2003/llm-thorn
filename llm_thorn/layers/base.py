@@ -10,10 +10,10 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-from thorn.core.models import LayerVerdict, LLMRequest, LLMResponse, Verdict
+from llm_thorn.core.models import LayerVerdict, LLMRequest, LLMResponse, Verdict
 
 if TYPE_CHECKING:
-    from thorn.core.session import SessionContext
+    from llm_thorn.core.session import SessionContext
 
 
 class BaseLayer(ABC):
@@ -23,19 +23,19 @@ class BaseLayer(ABC):
     The interface is intentionally minimal so plugins are easy to write.
 
     Layers are stateless. Session state lives in SessionContext
-    (``thorn/core/session.py``). Request it via the ``session`` parameter if
+    (``llm_thorn/core/session.py``). Request it via the ``session`` parameter if
     your layer needs conversation history.
 
     To publish a community layer:
         1. Subclass BaseLayer
         2. Implement ``name``, ``inspect_input``, and/or ``inspect_output``
-        3. Publish to PyPI as ``thorn-<your-layer-name>``
+        3. Publish to PyPI as ``llm-thorn-<your-layer-name>``
         4. Users add it to their policy.yaml under ``plugins:``
 
     Example plugin entry in policy.yaml::
 
         plugins:
-          - "thorn_pii_guard.PIIGuardLayer"
+          - "llm_thorn_pii_guard.PIIGuardLayer"
     """
 
     @property

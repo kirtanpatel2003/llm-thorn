@@ -25,7 +25,7 @@ ollama serve                  # default: http://localhost:11434
 ## Proxying an Ollama upstream
 
 ```bash
-thorn start --policy ./policy.yaml \
+llm-thorn start --policy ./policy.yaml \
     --upstream http://localhost:11434 \
     --backend ollama \
     --port 8080
@@ -58,7 +58,7 @@ Other paths (`/api/tags`, `/api/embeddings`, ...) pass through.
 ## Configuring the semantic layer
 
 ```bash
-thorn start --policy ./policy.yaml \
+llm-thorn start --policy ./policy.yaml \
     --upstream https://api.openai.com \
     --ollama-url http://localhost:11434 \
     --ollama-model llama3.2

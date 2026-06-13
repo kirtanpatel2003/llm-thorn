@@ -5,7 +5,7 @@ Native support for the Anthropic Messages API (`api.anthropic.com`).
 ## Usage
 
 ```bash
-thorn start --policy ./policy.yaml \
+llm-thorn start --policy ./policy.yaml \
     --upstream https://api.anthropic.com \
     --backend anthropic
 ```

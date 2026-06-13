@@ -31,13 +31,13 @@ Initial release.
   output anomaly detection (prompt leakage, injection success, PII, deny
   terms).
 - **Three integration modes** running one shared pipeline: reverse proxy
-  (`thorn start`), SDK wrapper (`thorn.guard()`), and ASGI middleware
-  (`thorn.ThornMiddleware`).
+  (`llm-thorn start`), SDK wrapper (`llm_thorn.guard()`), and ASGI middleware
+  (`llm_thorn.ThornMiddleware`).
 - **Policy-as-code**: Pydantic-validated YAML policies with per-layer rules,
   five actions (allow/warn/block/redact/terminate_session), configurable
   fail-open/fail-closed error handling, and actionable validation errors.
-- **Hash-chained audit log** in SQLite with `thorn audit verify` (integrity
-  check, exit code 0/1) and `thorn audit report` (time-window and
+- **Hash-chained audit log** in SQLite with `llm-thorn audit verify` (integrity
+  check, exit code 0/1) and `llm-thorn audit report` (time-window and
   per-session summaries).
 - **Plugin system**: community layers via `BaseLayer`, loaded from policy
   YAML (`plugins:`), with a fully documented reference plugin

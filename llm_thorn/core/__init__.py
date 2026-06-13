@@ -1,6 +1,6 @@
 """Core components: data models, session tracking, audit log, and proxy."""
 
-from thorn.core.models import (
+from llm_thorn.core.models import (
     Action,
     AuditEntry,
     LayerName,

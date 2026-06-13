@@ -7,9 +7,9 @@ from datetime import UTC, datetime
 
 import pytest
 
-from thorn.core.models import Verdict
-from thorn.core.session import SessionContext, SessionStore
-from thorn.layers.context import ContextLayer
+from llm_thorn.core.models import Verdict
+from llm_thorn.core.session import SessionContext, SessionStore
+from llm_thorn.layers.context import ContextLayer
 
 
 @pytest.fixture

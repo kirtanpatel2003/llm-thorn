@@ -32,9 +32,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from thorn.core.models import Action, LLMRequest  # noqa: E402
-from thorn.core.pipeline import DetectionPipeline  # noqa: E402
-from thorn.policy.schema import load_policy  # noqa: E402
+from llm_thorn.core.models import Action, LLMRequest  # noqa: E402
+from llm_thorn.core.pipeline import DetectionPipeline  # noqa: E402
+from llm_thorn.policy.schema import load_policy  # noqa: E402
 
 ADVERSARIAL_SAMPLES = REPO_ROOT / "tests" / "adversarial" / "samples" / "attacks.json"
 RESULTS_DIR = Path(__file__).parent / "results"

@@ -7,8 +7,8 @@ templates**. This document covers all three, plus the development setup.
 ## Development setup
 
 ```bash
-git clone https://github.com/kirtanpatel2003/thorn
-cd thorn
+git clone https://github.com/kirtanpatel2003/llm-thorn
+cd llm-thorn
 uv sync                # installs everything, including dev dependencies
 uv run pytest tests/   # 180+ tests, all should pass
 uv run ruff check .    # zero lint errors expected
@@ -17,7 +17,7 @@ uv run ruff check .    # zero lint errors expected
 Run the proxy locally against a mock or real upstream:
 
 ```bash
-uv run thorn start --policy policies/customer-support.yaml \
+uv run llm-thorn start --policy policies/customer-support.yaml \
     --upstream https://api.openai.com --port 8080
 ```
 
@@ -32,7 +32,7 @@ suite — works without it.
 - Docstrings on all public classes and methods — a stranger must be able to
   use your API from the docstring alone.
 - No magic strings for verdicts/actions/layer names: use the enums in
-  `thorn/core/models.py`.
+  `llm_thorn/core/models.py`.
 - `ruff check .` and `ruff format --check .` must pass. Config lives in
   `pyproject.toml`.
 - Layers that do I/O must be `async def`. Layers that don't, must not be.
@@ -42,17 +42,17 @@ suite — works without it.
 ## Writing a Custom Layer
 
 Layers are Thorn's primary extension point. A layer is one class; the entire
-contract is `BaseLayer` in [thorn/layers/base.py](thorn/layers/base.py),
+contract is `BaseLayer` in [llm_thorn/layers/base.py](llm_thorn/layers/base.py),
 which is **stable within a major version** — your plugin will not break on
 minor releases.
 
 ### Minimal complete example
 
 ```python
-"""thorn_emoji_guard/__init__.py — blocks suspiciously emoji-dense input."""
+"""llm_thorn_emoji_guard/__init__.py — blocks suspiciously emoji-dense input."""
 
-from thorn import BaseLayer
-from thorn.core.models import LayerVerdict, LLMRequest, Verdict
+from llm_thorn import BaseLayer
+from llm_thorn.core.models import LayerVerdict, LLMRequest, Verdict
 
 
 class EmojiGuardLayer(BaseLayer):
@@ -99,7 +99,7 @@ class EmojiGuardLayer(BaseLayer):
    [tests/unit/test_heuristic_layer.py](tests/unit/test_heuristic_layer.py)
    for the pattern, and the reference plugin in
    [plugins/example/](plugins/example/) for a complete worked example.
-6. **Publish to PyPI as `thorn-<your-layer-name>`** with
+6. **Publish to PyPI as `llm-thorn-<your-layer-name>`** with
    `dependencies = ["llm-thorn>=0.1"]`.
 7. **Submit to the community registry**: open a PR adding one row to the
    plugin table in the README.
@@ -108,7 +108,7 @@ Users enable your layer with:
 
 ```yaml
 plugins:
-  - "thorn_emoji_guard.EmojiGuardLayer"
+  - "llm_thorn_emoji_guard.EmojiGuardLayer"
 rules:
   - id: block-emoji-floods
     layer: emoji_guard
@@ -122,9 +122,9 @@ rules:
 
 Backends translate one provider's wire format to Thorn's normalized models.
 The contract is `AbstractBackend` in
-[thorn/backends/base.py](thorn/backends/base.py).
+[llm_thorn/backends/base.py](llm_thorn/backends/base.py).
 
-1. **Subclass `AbstractBackend`** in `thorn/backends/<provider>.py` and
+1. **Subclass `AbstractBackend`** in `llm_thorn/backends/<provider>.py` and
    implement:
    - `name` — provider identifier (`"mistral"`),
    - `inspect_paths` — URL suffixes whose requests get inspected,
@@ -134,14 +134,14 @@ The contract is `AbstractBackend` in
    - `normalize_response(raw_body, session_id)` — provider body →
      `LLMResponse` with the assistant text extracted into `content`.
    - Override `forward()` only if the provider needs special transport.
-2. **Register it** in the `BACKENDS` dict in `thorn/backends/__init__.py`.
+2. **Register it** in the `BACKENDS` dict in `llm_thorn/backends/__init__.py`.
 3. **Optional SDK dependency?** Add it to `pyproject.toml` as an extra
    (`[project.optional-dependencies]`), never as a hard dependency.
 4. **Write mocked integration tests** — subclass your backend, replace
    `forward()` with a canned response, and drive it through `create_app()`.
    [tests/integration/test_proxy_openai.py](tests/integration/test_proxy_openai.py)
    is the template.
-5. **Document it** in `docs/backends/<provider>.md`: example `thorn start`
+5. **Document it** in `docs/backends/<provider>.md`: example `llm-thorn start`
    invocation, auth header handling, any normalization caveats.
 
 The invariant your backend must uphold: **layers never see provider-specific
@@ -165,7 +165,7 @@ start from a template, not a blank file.
    documents; a threshold without a why is a cargo cult waiting to happen.
 4. **Validate it**:
    ```bash
-   uv run python -c "from thorn.policy import load_policy; load_policy('policies/your-template.yaml')"
+   uv run python -c "from llm_thorn.policy import load_policy; load_policy('policies/your-template.yaml')"
    ```
 5. **Open a PR** to `policies/` and add a row to the table in
    `policies/README.md`.

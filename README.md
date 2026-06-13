@@ -5,7 +5,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/llm-thorn)](https://pypi.org/project/llm-thorn/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![CI](https://github.com/kirtanpatel2003/thorn/actions/workflows/ci.yml/badge.svg)](https://github.com/kirtanpatel2003/thorn/actions/workflows/ci.yml)
+[![CI](https://github.com/kirtanpatel2003/llm-thorn/actions/workflows/ci.yml/badge.svg)](https://github.com/kirtanpatel2003/llm-thorn/actions/workflows/ci.yml)
 
 ---
 
@@ -48,14 +48,14 @@ No code changes required in proxy mode; full SDK and middleware modes when
 you want them.
 
 > 🎬 *[placeholder: terminal GIF — a DAN jailbreak attempt hitting the proxy
-> and getting blocked, with the audit entry appearing in `thorn audit report`]*
+> and getting blocked, with the audit entry appearing in `llm-thorn audit report`]*
 
 ## Quickstart
 
 ```bash
 pip install llm-thorn
 
-thorn start --policy policies/customer-support.yaml --upstream https://api.openai.com
+llm-thorn start --policy policies/customer-support.yaml --upstream https://api.openai.com
 ```
 
 Point your existing app at the proxy — that is the entire integration:
@@ -84,8 +84,8 @@ client.chat.completions.create(
 Every decision — including that block — is already in the audit log:
 
 ```bash
-thorn audit report --db ./thorn.db --last 24h
-thorn audit verify --db ./thorn.db   # cryptographic integrity check
+llm-thorn audit report --db ./thorn.db --last 24h
+llm-thorn audit verify --db ./thorn.db   # cryptographic integrity check
 ```
 
 ## Integration Modes
@@ -93,7 +93,7 @@ thorn audit verify --db ./thorn.db   # cryptographic integrity check
 **Mode 1 — Reverse proxy** (zero code change):
 
 ```bash
-thorn start --policy ./policy.yaml --upstream https://api.openai.com --port 8080
+llm-thorn start --policy ./policy.yaml --upstream https://api.openai.com --port 8080
 ```
 
 Send an `X-Thorn-Session-Id` header to get precise multi-turn tracking per
@@ -103,7 +103,7 @@ conversation; without it, Thorn groups turns by client credentials + IP.
 
 ```python
 import openai
-from thorn import guard
+from llm_thorn import guard
 
 client = guard(openai.OpenAI(), policy="./policy.yaml")
 
@@ -118,7 +118,7 @@ response = client.chat.completions.create(
 
 ```python
 from fastapi import FastAPI
-from thorn import ThornMiddleware
+from llm_thorn import ThornMiddleware
 
 app = FastAPI()
 app.add_middleware(ThornMiddleware, policy="./policy.yaml", inspect_paths=("/chat",))
@@ -155,7 +155,7 @@ policy:
     output: true
 
   plugins:                      # community layers from PyPI, loaded at startup
-    - "thorn_pii_guard.PIIGuardLayer"
+    - "llm_thorn_pii_guard.PIIGuardLayer"
 
   rules:
     - id: block-known-attacks   # unique id — shows up in audit entries
@@ -165,7 +165,7 @@ policy:
         verdict: malicious      # fires on this verdict or stricter
         confidence_above: 0.8   # AND confidence must exceed this
       action: block             # allow | warn | block | redact | terminate_session
-      alert: true               # also emit to the thorn.alerts logger
+      alert: true               # also emit to the llm_thorn.alerts logger
 
     - id: kill-probing-sessions
       layer: context
@@ -214,8 +214,8 @@ p50 latency 1.4ms / p95 2.1ms. Reproduce with
 A Thorn layer is one class. This is the complete plugin contract:
 
 ```python
-from thorn import BaseLayer
-from thorn.core.models import LayerVerdict, LLMRequest, Verdict
+from llm_thorn import BaseLayer
+from llm_thorn.core.models import LayerVerdict, LLMRequest, Verdict
 
 class ProfanityLayer(BaseLayer):
     @property
@@ -232,7 +232,7 @@ class ProfanityLayer(BaseLayer):
         )
 ```
 
-Publish to PyPI as `thorn-<name>`, and users enable it with two lines of
+Publish to PyPI as `llm-thorn-<name>`, and users enable it with two lines of
 policy YAML. Walkthrough: [docs/writing-a-layer.md](docs/writing-a-layer.md);
 reference implementation: [plugins/example/](plugins/example/).
 
@@ -253,7 +253,7 @@ reference implementation: [plugins/example/](plugins/example/).
 ```
 
 Every audit entry stores `sha256(previous_chain_hash + entry_content)` —
-modify or delete any entry and `thorn audit verify` reports exactly where the
+modify or delete any entry and `llm-thorn audit verify` reports exactly where the
 chain broke. Full detail: [docs/architecture.md](docs/architecture.md).
 
 ## Comparison

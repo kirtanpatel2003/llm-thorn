@@ -6,8 +6,8 @@ import sqlite3
 import time
 from datetime import UTC, datetime, timedelta
 
-from thorn.core.audit import AuditLog
-from thorn.core.models import LayerVerdict, PolicyDecision, Verdict
+from llm_thorn.core.audit import AuditLog
+from llm_thorn.core.models import LayerVerdict, PolicyDecision, Verdict
 
 
 def _decision(session_id: str = "s1") -> PolicyDecision:

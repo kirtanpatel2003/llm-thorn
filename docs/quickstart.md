@@ -15,7 +15,7 @@ Requires Python 3.11+.
 ## 2. Start the proxy
 
 ```bash
-thorn start \
+llm-thorn start \
   --policy policies/customer-support.yaml \
   --upstream https://api.openai.com \
   --port 8080
@@ -24,7 +24,7 @@ thorn start \
 You should see:
 
 ```
-thorn starting: policy=customer-support v1.0.0, backend=openai, upstream=https://api.openai.com
+llm-thorn starting: policy=customer-support v1.0.0, backend=openai, upstream=https://api.openai.com
 point your client base_url at http://127.0.0.1:8080
 ```
 
@@ -86,17 +86,17 @@ coarser, but multi-turn detection still works.
 Every request — allowed or blocked — is already in the tamper-evident log:
 
 ```bash
-thorn audit report --db ./thorn.db --last 24h
+llm-thorn audit report --db ./thorn.db --last 24h
 # 12 entries — allow: 10, block: 2
 # ┌─────────────────────┬──────────────┬────────┬──────────────────────┬─────────────────────┐
 # │ timestamp           │ session      │ action │ triggered by         │ worst verdict       │
 # ...
 
-thorn audit verify --db ./thorn.db
+llm-thorn audit verify --db ./thorn.db
 # ✓ audit chain intact — 12 entries verified
 ```
 
-`thorn audit verify` exits 1 if any entry has been modified or deleted —
+`llm-thorn audit verify` exits 1 if any entry has been modified or deleted —
 wire it into your compliance checks.
 
 ## Other integration modes
@@ -105,17 +105,17 @@ wire it into your compliance checks.
 
 ```python
 import openai
-from thorn import guard
+from llm_thorn import guard
 
 client = guard(openai.OpenAI(), policy="policies/customer-support.yaml")
-# identical client surface; raises thorn.sdk.ThornBlocked on policy hits
+# identical client surface; raises llm_thorn.sdk.ThornBlocked on policy hits
 ```
 
 **ASGI middleware** — guard your own chat endpoints:
 
 ```python
 from fastapi import FastAPI
-from thorn import ThornMiddleware
+from llm_thorn import ThornMiddleware
 
 app = FastAPI()
 app.add_middleware(ThornMiddleware, policy="policies/customer-support.yaml",
