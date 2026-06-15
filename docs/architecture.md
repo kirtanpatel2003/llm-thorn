@@ -10,6 +10,7 @@
     │  Layer 2: Semantic       │  Ollama intent classifier — <2s
     │  Layer 3: Context        │  Multi-turn risk scoring — <10ms
     │  Layer 4: Output         │  Response anomaly detection — <5ms
+    │  Layer 5: Safety         │  Harmful-content judge (CoJP) — <2s
     │                          │
     │  Policy Engine           │  YAML rule evaluation
     │  Audit Logger            │  Hash-chained SQLite log
@@ -37,7 +38,7 @@ sequenceDiagram
         T->>T: output layer (4) → verdicts
         T->>T: policy engine → final decision
         T->>T: write audit entry  ← always BEFORE returning
-        T-->>C: response (possibly redacted, x-thorn-action header)
+        T-->>C: response (possibly redacted, x-llm-thorn-action header)
     end
 ```
 

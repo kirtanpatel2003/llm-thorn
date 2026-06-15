@@ -25,7 +25,7 @@ response = client.messages.create(
     max_tokens=1024,
     system="You are a support assistant for Acme.",
     messages=[{"role": "user", "content": "hello"}],
-    extra_headers={"X-Thorn-Session-Id": "user-42-chat-7"},
+    extra_headers={"X-LLM-Thorn-Session-Id": "user-42-chat-7"},
 )
 ```
 

@@ -58,7 +58,7 @@ def _chat_body(content: str) -> dict:
 
 
 async def test_health_endpoint(client) -> None:
-    response = await client.get("/thorn/health")
+    response = await client.get("/llm-thorn/health")
     assert response.status_code == 200
     body = response.json()
     assert body["status"] == "ok"
@@ -69,11 +69,11 @@ async def test_benign_request_forwarded(client, backend) -> None:
     response = await client.post(
         "/v1/chat/completions",
         json=_chat_body(BENIGN),
-        headers={"x-thorn-session-id": "proxy-benign"},
+        headers={"x-llm-thorn-session-id": "proxy-benign"},
     )
     assert response.status_code == 200
     assert response.json()["choices"][0]["message"]["content"] == "We open at 9am!"
-    assert response.headers["x-thorn-action"] == "allow"
+    assert response.headers["x-llm-thorn-action"] == "allow"
     assert len(backend.forwarded) == 1
 
 
@@ -81,12 +81,12 @@ async def test_attack_blocked_never_reaches_upstream(client, backend) -> None:
     response = await client.post(
         "/v1/chat/completions",
         json=_chat_body(ATTACK),
-        headers={"x-thorn-session-id": "proxy-attack"},
+        headers={"x-llm-thorn-session-id": "proxy-attack"},
     )
     assert response.status_code == 403
     body = response.json()
-    assert body["error"]["code"] == "thorn_block"
-    assert body["error"]["thorn"]["triggered_by"]
+    assert body["error"]["code"] == "llm_thorn_block"
+    assert body["error"]["llm_thorn"]["triggered_by"]
     assert backend.forwarded == []  # upstream never saw it
 
 
@@ -94,7 +94,7 @@ async def test_blocked_request_is_audited(client, db_path) -> None:
     await client.post(
         "/v1/chat/completions",
         json=_chat_body(ATTACK),
-        headers={"x-thorn-session-id": "proxy-audit"},
+        headers={"x-llm-thorn-session-id": "proxy-audit"},
     )
     log = AuditLog(db_path)
     entries = log.entries(session_id="proxy-audit")
@@ -108,7 +108,7 @@ async def test_allowed_request_audited_with_response_hash(client, db_path) -> No
     await client.post(
         "/v1/chat/completions",
         json=_chat_body(BENIGN),
-        headers={"x-thorn-session-id": "proxy-ok"},
+        headers={"x-llm-thorn-session-id": "proxy-ok"},
     )
     log = AuditLog(db_path)
     entries = log.entries(session_id="proxy-ok")
@@ -136,7 +136,7 @@ async def test_hijacked_response_blocked(policy, db_path) -> None:
     response = await client.post(
         "/v1/chat/completions",
         json=_chat_body("summarize the news"),
-        headers={"x-thorn-session-id": "hijack"},
+        headers={"x-llm-thorn-session-id": "hijack"},
     )
     assert response.status_code == 403
     assert len(backend.forwarded) == 1  # it DID go upstream; the response was caught
@@ -178,7 +178,7 @@ async def test_session_continuity_via_header(client) -> None:
         response = await client.post(
             "/v1/chat/completions",
             json=_chat_body(probe),
-            headers={"x-thorn-session-id": "continuity"},
+            headers={"x-llm-thorn-session-id": "continuity"},
         )
         statuses.append(response.status_code)
     assert statuses[0] == 200

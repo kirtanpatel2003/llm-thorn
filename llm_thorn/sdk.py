@@ -54,7 +54,7 @@ class ThornBlocked(Exception):
 def guard(
     client: Any,  # any OpenAI-compatible client; typed Any to avoid a hard dependency
     policy: str | Policy,
-    db_path: str = "./thorn.db",
+    db_path: str = "./llm-thorn.db",
     session_id: str | None = None,
     ollama_url: str = "http://localhost:11434",
     ollama_model: str = "llama3.2",

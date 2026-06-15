@@ -12,7 +12,7 @@ from llm_thorn.core.models import LLMRequest, LLMResponse
 from llm_thorn.policy.schema import Policy, load_policy
 
 #: A representative policy used across unit and integration tests.
-#: The semantic layer is disabled — tests must not require a running Ollama.
+#: The semantic and safety layers are disabled — tests must not require Ollama.
 TEST_POLICY_YAML = """\
 policy:
   name: test-policy
@@ -24,6 +24,7 @@ policy:
     semantic: false
     context: true
     output: true
+    safety: false
 
   rules:
     - id: block-heuristic-malicious

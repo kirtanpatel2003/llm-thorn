@@ -71,7 +71,7 @@ class SessionStore:
 
     Example::
 
-        store = SessionStore("./thorn.db", ttl_seconds=3600, max_turns=50)
+        store = SessionStore("./llm-thorn.db", ttl_seconds=3600, max_turns=50)
         ctx = store.get_or_create("session-1")
         store.record_turn("session-1", risk_delta=2.5, event={"kind": "probe"})
     """

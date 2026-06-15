@@ -39,6 +39,7 @@ from llm_thorn.layers.base import BaseLayer
 from llm_thorn.layers.context import ContextLayer
 from llm_thorn.layers.heuristic import HeuristicLayer
 from llm_thorn.layers.output import OutputLayer, redact_pii
+from llm_thorn.layers.safety import SafetyLayer
 from llm_thorn.layers.semantic import SemanticLayer
 from llm_thorn.policy.engine import PolicyEngine
 from llm_thorn.policy.schema import LayerErrorMode, Policy, PolicyError
@@ -109,7 +110,7 @@ class DetectionPipeline:
     def __init__(
         self,
         policy: Policy,
-        db_path: str = "./thorn.db",
+        db_path: str = "./llm-thorn.db",
         ollama_url: str = "http://localhost:11434",
         ollama_model: str = "llama3.2",
     ) -> None:
@@ -132,6 +133,8 @@ class DetectionPipeline:
             self.input_layers.append(ContextLayer())
         if policy.layers.output:
             self.output_layers.append(OutputLayer())
+        if policy.layers.safety:
+            self.output_layers.append(SafetyLayer(base_url=ollama_url, model=ollama_model))
 
         for spec in policy.plugins:
             plugin = _load_plugin(spec)
@@ -214,8 +217,8 @@ class DetectionPipeline:
 
     async def close(self) -> None:
         """Release database connections and HTTP clients."""
-        for layer in self.input_layers:
-            if isinstance(layer, SemanticLayer):
+        for layer in (*self.input_layers, *self.output_layers):
+            if isinstance(layer, SemanticLayer | SafetyLayer):
                 await layer.close()
         self.sessions.close()
         self.audit.close()

@@ -64,6 +64,7 @@ class LayerToggles(BaseModel):
     semantic: bool = True
     context: bool = True
     output: bool = True
+    safety: bool = True
 
 
 class RuleCondition(BaseModel):

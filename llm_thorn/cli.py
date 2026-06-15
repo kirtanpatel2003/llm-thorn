@@ -3,9 +3,9 @@
 Commands::
 
     llm-thorn start --policy ./policy.yaml --upstream https://api.openai.com
-    llm-thorn audit verify --db ./thorn.db
-    llm-thorn audit report --db ./thorn.db --last 24h
-    llm-thorn audit report --db ./thorn.db --session <session_id>
+    llm-thorn audit verify --db ./llm-thorn.db
+    llm-thorn audit report --db ./llm-thorn.db --last 24h
+    llm-thorn audit report --db ./llm-thorn.db --session <session_id>
     llm-thorn version
 """
 
@@ -51,7 +51,7 @@ def start(
         str, typer.Option("--backend", help=f"Upstream wire format: {', '.join(BACKENDS)}.")
     ] = "openai",
     db: Annotated[Path, typer.Option("--db", help="SQLite path for sessions + audit log.")] = Path(
-        "./thorn.db"
+        "./llm-thorn.db"
     ),
     ollama_url: Annotated[
         str, typer.Option("--ollama-url", help="Ollama URL for the semantic layer.")
@@ -96,7 +96,7 @@ def start(
 
 @audit_app.command()
 def verify(
-    db: Annotated[Path, typer.Option("--db", help="Audit database path.")] = Path("./thorn.db"),
+    db: Annotated[Path, typer.Option("--db", help="Audit database path.")] = Path("./llm-thorn.db"),
 ) -> None:
     """Verify the integrity of the audit hash chain.
 
@@ -121,7 +121,7 @@ def verify(
 
 @audit_app.command()
 def report(
-    db: Annotated[Path, typer.Option("--db", help="Audit database path.")] = Path("./thorn.db"),
+    db: Annotated[Path, typer.Option("--db", help="Audit database path.")] = Path("./llm-thorn.db"),
     last: Annotated[
         str | None, typer.Option("--last", help="Time window, e.g. 24h, 7d, 30m.")
     ] = None,

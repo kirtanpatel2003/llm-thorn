@@ -38,6 +38,9 @@ dependencies = [
 [project.optional-dependencies]
 openai = ["openai>=1.30"]
 anthropic = ["anthropic>=0.25"]
+# Observability: trace evaluation runs and Ollama calls with Laminar.
+# Optional — only the red-team eval harness uses it, never the core stack.
+laminar = ["lmnr>=0.4"]
 
 [dependency-groups]
 dev = [

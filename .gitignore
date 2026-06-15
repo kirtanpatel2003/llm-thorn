@@ -24,6 +24,27 @@ htmlcov/
 benchmarks/results/*
 !benchmarks/results/.gitkeep
 
+# Secrets & local config — never commit API keys or tokens
+.env
+.env.*
+*.env
+secrets.*
+*.pem
+*.key
+
+# Observability (Laminar) local state / tokens
+.lmnr/
+LMNR_PROJECT_API_KEY
+
+# Red-team data & local model artifacts (attack corpora, generated responses)
+*.jsonl
+!benchmarks/datasets/*.jsonl
+*.gguf
+*.bin
+
+# Demo recordings (regenerate; keep the repo light)
+*.cast
+
 # OS / editor noise
 .DS_Store
 .idea/

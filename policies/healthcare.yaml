@@ -20,6 +20,7 @@ policy:
     semantic: true
     context: true
     output: true
+    safety: true
 
   rules:
     # Lower threshold than other templates: in this domain we accept more
@@ -85,6 +86,16 @@ policy:
     - id: block-phi-in-output
       description: Block responses containing PII/PHI patterns.
       layer: output
+      condition:
+        verdict: suspicious
+        confidence_above: 0.5
+      action: block
+      alert: true
+
+    # Low threshold: in this domain, even borderline-harmful output is blocked.
+    - id: block-harmful-output
+      description: Block responses containing harmful/dangerous content.
+      layer: safety
       condition:
         verdict: suspicious
         confidence_above: 0.5

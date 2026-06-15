@@ -7,8 +7,36 @@ interface only changes on major versions.
 
 ## [Unreleased]
 
+### Changed
+
+- **Renamed the project to `llm-thorn`** (the `thorn` name was taken on PyPI).
+  This covers the distribution name (`pip install llm-thorn`), the Python
+  package (`import llm_thorn`), the CLI command (`llm-thorn`), and the HTTP
+  wire API: header prefix `X-LLM-Thorn-*`, health endpoint `/llm-thorn/health`,
+  error type `llm_thorn_policy` / codes `llm_thorn_<action>`, and the default
+  database filename (`llm-thorn.db`).
+
 ### Added
 
+- **Content-safety layer (Layer 5)** — a local LLM judge that scores the
+  model's *response* for harmful content (weapons, explosives, drugs, CBRN,
+  malware, violence). It defends against harmful-content elicitation —
+  framing attacks like the Co-Authoring Jailbreak (CoJP) that coax a model
+  into dangerous output without tripping any injection signature. Because it
+  judges the response, it protects OpenAI, Anthropic, and local upstreams
+  identically. On by default; disable via `layers.safety: false`.
+- `benchmarks/redco_eval.py`: evaluates llm-thorn against a Red_Co-Author
+  CoJP result log, measuring input-side and output-side (safety) detection
+  and the stop rate among attacks that actually jailbroke the target model.
+- Live red-team evaluation harness (`benchmarks/redteam_eval.py`): fires a
+  corpus of single-shot jailbreak prompts through the full live stack
+  (semantic layer included), forwards survivors to an Ollama or cloud target
+  so the output layer can judge real responses, and reports per-layer
+  detection. Reads a directory of `.txt` prompts — the integration point for
+  external red-team tools.
+- Optional Laminar tracing for the eval harness (`--trace`, `laminar` extra):
+  one span per prompt covering input verdict, target generation, and output
+  inspection. Degrades to a no-op when `lmnr` or the API key is absent.
 - CI restructured into independent status checks (lint, format, test on
   3.11/3.12, adversarial-regression, policy-templates, build) so branch
   protection can require each individually.

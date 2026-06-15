@@ -66,7 +66,7 @@ class AuditLog:
 
     Example::
 
-        log = AuditLog("./thorn.db")
+        log = AuditLog("./llm-thorn.db")
         entry = log.append(
             session_id="abc",
             request_hash="...",

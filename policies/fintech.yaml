@@ -94,6 +94,17 @@ policy:
       action: block
       alert: true
 
+    # Harmful content (fraud schemes, malware, etc.) never reaches the user,
+    # even if the model was socially engineered into producing it.
+    - id: block-harmful-output
+      description: Block responses containing harmful/dangerous content.
+      layer: safety
+      condition:
+        verdict: malicious
+        confidence_above: 0.7
+      action: block
+      alert: true
+
   defaults:
     on_layer_error: block      # fail-closed
     max_session_turns: 20      # financial sessions are short by nature

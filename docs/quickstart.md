@@ -74,7 +74,7 @@ per conversation:
 client.chat.completions.create(
     model="gpt-4o-mini",
     messages=[{"role": "user", "content": "hello"}],
-    extra_headers={"X-Thorn-Session-Id": "user-42-conversation-7"},
+    extra_headers={"X-LLM-Thorn-Session-Id": "user-42-conversation-7"},
 )
 ```
 
@@ -86,13 +86,13 @@ coarser, but multi-turn detection still works.
 Every request — allowed or blocked — is already in the tamper-evident log:
 
 ```bash
-llm-thorn audit report --db ./thorn.db --last 24h
+llm-thorn audit report --db ./llm-thorn.db --last 24h
 # 12 entries — allow: 10, block: 2
 # ┌─────────────────────┬──────────────┬────────┬──────────────────────┬─────────────────────┐
 # │ timestamp           │ session      │ action │ triggered by         │ worst verdict       │
 # ...
 
-llm-thorn audit verify --db ./thorn.db
+llm-thorn audit verify --db ./llm-thorn.db
 # ✓ audit chain intact — 12 entries verified
 ```
 

@@ -37,12 +37,13 @@ class Action(StrEnum):
 
 
 class LayerName(StrEnum):
-    """Identifiers for the four built-in detection layers."""
+    """Identifiers for the built-in detection layers."""
 
     HEURISTIC = "heuristic"
     SEMANTIC = "semantic"
     CONTEXT = "context"
     OUTPUT = "output"
+    SAFETY = "safety"
 
 
 # ---------------------------------------------------------------------------

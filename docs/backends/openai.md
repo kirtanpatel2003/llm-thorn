@@ -42,13 +42,13 @@ verbatim with no inspection and no audit entry.
 
 ## Sessions
 
-Send `X-Thorn-Session-Id` per conversation for precise multi-turn tracking:
+Send `X-LLM-Thorn-Session-Id` per conversation for precise multi-turn tracking:
 
 ```python
 client.chat.completions.create(
     model="gpt-4o-mini",
     messages=messages,
-    extra_headers={"X-Thorn-Session-Id": f"user-{user_id}-chat-{chat_id}"},
+    extra_headers={"X-LLM-Thorn-Session-Id": f"user-{user_id}-chat-{chat_id}"},
 )
 ```
 

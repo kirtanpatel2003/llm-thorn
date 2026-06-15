@@ -23,6 +23,7 @@ policy:
     semantic: true
     context: true
     output: true
+    safety: true
 
   rules:
     # Note the 0.9 threshold — code snippets legitimately contain strings
@@ -82,6 +83,17 @@ policy:
         verdict: suspicious
         confidence_above: 0.5
       action: redact
+
+    # Block genuinely dangerous output (e.g. working malware, intrusion
+    # tooling) even when a developer framing talks the model into it.
+    - id: block-harmful-output
+      description: Block responses containing harmful/dangerous content.
+      layer: safety
+      condition:
+        verdict: malicious
+        confidence_above: 0.8
+      action: block
+      alert: true
 
   defaults:
     on_layer_error: allow      # fail-open: developer productivity

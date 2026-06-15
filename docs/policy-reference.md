@@ -80,7 +80,7 @@ All present conditions must hold (AND semantics):
 | Action | Input rule | Output rule |
 |---|---|---|
 | `allow` | explicit allow (still audited) | same |
-| `warn` | forward; decision logged, `x-thorn-warning` header set (proxy) | deliver; logged |
+| `warn` | forward; decision logged, `x-llm-thorn-warning` header set (proxy) | deliver; logged |
 | `block` | request never reaches the LLM; client gets 403 with rule ids | response never reaches the client; 403 |
 | `redact` | forwarded; treat as warn on input | PII patterns in the response replaced with `[REDACTED]` |
 | `terminate_session` | block **and** mark the session dead — every subsequent request on it is blocked until the session expires | same |

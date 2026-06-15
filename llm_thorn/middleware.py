@@ -21,7 +21,7 @@ Usage::
 The middleware expects inspected endpoints to consume and produce
 OpenAI-shaped JSON (a ``messages`` list in, a ``choices`` list or plain
 ``content`` field out). Session identity comes from the
-``X-Thorn-Session-Id`` request header, falling back to client address.
+``X-LLM-Thorn-Session-Id`` request header, falling back to client address.
 """
 
 from __future__ import annotations
@@ -39,7 +39,7 @@ from llm_thorn.core.models import Action, PolicyDecision, sha256_hex
 from llm_thorn.core.pipeline import DetectionPipeline
 from llm_thorn.policy.schema import Policy, load_policy
 
-SESSION_HEADER = "x-thorn-session-id"
+SESSION_HEADER = "x-llm-thorn-session-id"
 
 
 class ThornMiddleware(BaseHTTPMiddleware):
@@ -60,7 +60,7 @@ class ThornMiddleware(BaseHTTPMiddleware):
         app: ASGIApp,
         policy: str | Policy,
         inspect_paths: tuple[str, ...] = ("/chat/completions", "/chat"),
-        db_path: str = "./thorn.db",
+        db_path: str = "./llm-thorn.db",
         ollama_url: str = "http://localhost:11434",
         ollama_model: str = "llama3.2",
     ) -> None:
@@ -124,7 +124,7 @@ class ThornMiddleware(BaseHTTPMiddleware):
         headers = {
             k: v for k, v in response.headers.items() if k.lower() not in ("content-length",)
         }
-        headers["x-thorn-action"] = out.decision.action
+        headers["x-llm-thorn-action"] = out.decision.action
         return Response(
             content=content,
             status_code=response.status_code,
@@ -147,9 +147,9 @@ def _blocked_response(decision: PolicyDecision) -> JSONResponse:
         content={
             "error": {
                 "message": "Blocked by Thorn security policy",
-                "type": "thorn_policy",
-                "code": f"thorn_{decision.action}",
-                "thorn": {
+                "type": "llm_thorn_policy",
+                "code": f"llm_thorn_{decision.action}",
+                "llm_thorn": {
                     "action": decision.action,
                     "triggered_by": decision.triggered_by,
                     "audit_entry_id": decision.audit_entry_id,

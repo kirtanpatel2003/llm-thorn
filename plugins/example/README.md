@@ -37,7 +37,7 @@ print(layer.inspect_input(request))   # benign — "orders" topic matched
 
 ## Adapting it into your own plugin
 
-1. **Copy this directory** into a new repo named `thorn-<your-layer>`.
+1. **Copy this directory** into a new repo named `llm-thorn-<your-layer>`.
 
 2. **Rename and rewrite.** Change the class name, the `name` property
    (unique, snake_case — it's how policies reference your layer), and

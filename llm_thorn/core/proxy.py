@@ -5,7 +5,7 @@ the client just points its base URL at Thorn. Every chat completion request
 runs through the full detection pipeline; everything else (model lists,
 embeddings...) is forwarded transparently.
 
-Session identity: clients should send an ``X-Thorn-Session-Id`` header for
+Session identity: clients should send an ``X-LLM-Thorn-Session-Id`` header for
 precise multi-turn tracking. Without it, Thorn falls back to a stable hash
 of the caller's credentials + source IP, which still groups one client's
 turns together.
@@ -32,13 +32,13 @@ from llm_thorn.policy.schema import Policy
 logger = logging.getLogger("llm_thorn.proxy")
 
 #: Header a client sets to identify its conversation session.
-SESSION_HEADER = "x-thorn-session-id"
+SESSION_HEADER = "x-llm-thorn-session-id"
 
 
 def create_app(
     policy: Policy,
     backend: AbstractBackend,
-    db_path: str = "./thorn.db",
+    db_path: str = "./llm-thorn.db",
     ollama_url: str = "http://localhost:11434",
     ollama_model: str = "llama3.2",
 ) -> FastAPI:
@@ -72,7 +72,7 @@ def create_app(
     app.state.pipeline = pipeline
     app.state.backend = backend
 
-    @app.get("/thorn/health")
+    @app.get("/llm-thorn/health")
     async def health() -> dict:
         return {
             "status": "ok",
@@ -146,9 +146,9 @@ def create_app(
             response_body = _apply_redaction(response_body, out.redacted_content, backend)
             body_bytes = json.dumps(response_body).encode()
 
-        response_headers = {"x-thorn-action": out.decision.action}
+        response_headers = {"x-llm-thorn-action": out.decision.action}
         if out.decision.action == Action.WARN:
-            response_headers["x-thorn-warning"] = ",".join(out.decision.triggered_by)
+            response_headers["x-llm-thorn-warning"] = ",".join(out.decision.triggered_by)
 
         return Response(
             content=body_bytes,
@@ -195,8 +195,8 @@ def _blocked_response(decision: PolicyDecision) -> JSONResponse:
         if decision.action == Action.BLOCK
         else "Session terminated by Thorn security policy"
     )
-    body = _error_body(message, f"thorn_{decision.action}")
-    body["error"]["thorn"] = {
+    body = _error_body(message, f"llm_thorn_{decision.action}")
+    body["error"]["llm_thorn"] = {
         "action": decision.action,
         "triggered_by": decision.triggered_by,
         "audit_entry_id": decision.audit_entry_id,
@@ -206,7 +206,7 @@ def _blocked_response(decision: PolicyDecision) -> JSONResponse:
 
 def _error_body(message: str, code: str) -> dict:
     """OpenAI-style error envelope so SDK clients fail cleanly."""
-    return {"error": {"message": message, "type": "thorn_policy", "code": code}}
+    return {"error": {"message": message, "type": "llm_thorn_policy", "code": code}}
 
 
 def _apply_redaction(response_body: dict, redacted_content: str, backend: AbstractBackend) -> dict:

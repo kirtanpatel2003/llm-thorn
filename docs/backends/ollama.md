@@ -43,7 +43,7 @@ response = httpx.post(
         "stream": False,                     # streaming unsupported in v0.1
         "messages": [{"role": "user", "content": "hello"}],
     },
-    headers={"X-Thorn-Session-Id": "local-chat-1"},
+    headers={"X-LLM-Thorn-Session-Id": "local-chat-1"},
 )
 ```
 

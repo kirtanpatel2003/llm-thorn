@@ -1,15 +1,15 @@
 # Thorn reverse proxy image.
 #
 # Build (from the repo root):
-#   docker build -f docker/Dockerfile -t thorn .
+#   docker build -f docker/Dockerfile -t llm-thorn .
 #
 # Run:
 #   docker run -p 8080:8080 \
 #     -v $(pwd)/policies:/policies \
-#     -v thorn-data:/data \
+#     -v llm-thorn-data:/data \
 #     llm-thorn start --policy /policies/customer-support.yaml \
 #       --upstream https://api.openai.com \
-#       --host 0.0.0.0 --port 8080 --db /data/thorn.db
+#       --host 0.0.0.0 --port 8080 --db /data/llm-thorn.db
 #
 # Note: the semantic layer needs an Ollama reachable from the container —
 # pass --ollama-url http://host.docker.internal:11434 or run Ollama as a
