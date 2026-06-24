@@ -515,7 +515,6 @@ wheels = [
 
 [[package]]
 name = "llm-thorn"
-version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
@@ -559,7 +558,7 @@ requires-dist = [
     { name = "typer", specifier = ">=0.12" },
     { name = "uvicorn", specifier = ">=0.29" },
 ]
-provides-extras = ["openai", "anthropic", "laminar"]
+provides-extras = ["anthropic", "laminar", "openai"]
 
 [package.metadata.requires-dev]
 dev = [

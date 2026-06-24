@@ -1,6 +1,6 @@
 [project]
 name = "llm-thorn"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Runtime semantic security layer for LLM-powered applications. The WAF for the AI era."
 readme = "README.md"
 license = { text = "MIT" }
@@ -63,6 +63,11 @@ Changelog = "https://github.com/kirtanpatel2003/llm-thorn/blob/main/CHANGELOG.md
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+# Single source of truth for the version: read __version__ from the package
+# so pyproject.toml and llm_thorn/__init__.py can never drift apart.
+[tool.hatch.version]
+path = "llm_thorn/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["llm_thorn"]

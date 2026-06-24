@@ -34,6 +34,12 @@ logger = logging.getLogger("llm_thorn.proxy")
 #: Header a client sets to identify its conversation session.
 SESSION_HEADER = "x-llm-thorn-session-id"
 
+#: Largest request body Thorn will buffer and inspect. Bigger inspected bodies
+#: are rejected with 413 instead of being read into memory — a basic guard
+#: against memory exhaustion. Non-inspected paths (embeddings, model lists…)
+#: forward through untouched and are not subject to this limit.
+MAX_INSPECTED_BODY_BYTES = 10 * 1024 * 1024  # 10 MiB
+
 
 def create_app(
     policy: Policy,
@@ -89,8 +95,18 @@ def create_app(
         if request.method != "POST" or not backend.should_inspect(path):
             return await _passthrough(backend, path, request)
 
+        body_bytes = await request.body()
+        if len(body_bytes) > MAX_INSPECTED_BODY_BYTES:
+            return JSONResponse(
+                status_code=413,
+                content=_error_body(
+                    f"request body exceeds the {MAX_INSPECTED_BODY_BYTES}-byte inspection limit",
+                    "request_too_large",
+                ),
+            )
+
         try:
-            raw_body = json.loads(await request.body() or b"{}")
+            raw_body = json.loads(body_bytes or b"{}")
         except json.JSONDecodeError:
             return JSONResponse(
                 status_code=400,

@@ -170,21 +170,30 @@ def load_policy(path: str | Path) -> Policy:
     path = Path(path)
     if not path.exists():
         raise PolicyError(f"policy file not found: {path}")
+    return load_policy_from_text(path.read_text(), source=str(path))
 
+
+def load_policy_from_text(text: str, *, source: str = "<policy>") -> Policy:
+    """Validate a policy from a YAML string and return the :class:`Policy`.
+
+    Same validation path as :func:`load_policy`, for callers that already hold
+    the policy text — e.g. ``llm-thorn init`` validating its built-in template
+    before writing it. ``source`` labels the policy in any error message.
+
+    Raises :class:`PolicyError` with an actionable message on any problem.
+    """
     try:
-        raw = yaml.safe_load(path.read_text())
+        raw = yaml.safe_load(text)
     except yaml.YAMLError as exc:
-        raise PolicyError(f"policy file {path} is not valid YAML: {exc}") from exc
+        raise PolicyError(f"policy {source} is not valid YAML: {exc}") from exc
 
     if not isinstance(raw, dict):
-        raise PolicyError(
-            f"policy file {path} must be a YAML mapping with a top-level 'policy:' key"
-        )
+        raise PolicyError(f"policy {source} must be a YAML mapping with a top-level 'policy:' key")
 
     try:
         return PolicyFile.model_validate(raw).policy
     except ValidationError as exc:
-        raise PolicyError(_format_validation_error(path, exc)) from exc
+        raise PolicyError(_format_validation_error(Path(source), exc)) from exc
 
 
 def _format_validation_error(path: Path, exc: ValidationError) -> str:

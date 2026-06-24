@@ -18,9 +18,15 @@ Public API::
 Mode 1 (reverse proxy) is started from the CLI: ``llm-thorn start --policy ...``.
 """
 
+from typing import TYPE_CHECKING
+
 from llm_thorn.layers.base import BaseLayer
 
-__version__ = "0.1.0"
+if TYPE_CHECKING:  # `guard` / `ThornMiddleware` are provided lazily via __getattr__
+    from llm_thorn.middleware import ThornMiddleware
+    from llm_thorn.sdk import guard
+
+__version__ = "0.1.1"
 
 
 def __getattr__(name: str) -> object:

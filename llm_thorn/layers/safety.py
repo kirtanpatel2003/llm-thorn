@@ -199,6 +199,7 @@ def _extract_json(raw: str) -> dict | None:
         if isinstance(parsed, dict):
             return parsed
     except json.JSONDecodeError:
+        # Not clean JSON — fall through to the regex extraction below.
         pass
     match = re.search(r"\{.*\}", raw, re.DOTALL)
     if match:

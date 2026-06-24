@@ -35,9 +35,6 @@ DEFAULT_TOPICS: dict[str, list[str]] = {
     "account": ["password", "login", "account", "email", "profile", "settings"],
 }
 
-#: Fraction of recognizable words that must be on-topic for a clear pass.
-_ON_TOPIC_THRESHOLD = 0.05
-
 
 class TopicGuardLayer(BaseLayer):
     """Restricts conversations to an allowed set of topics.

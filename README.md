@@ -77,7 +77,8 @@ $ llm-thorn audit verify
 ```bash
 pip install llm-thorn
 
-llm-thorn start --policy policies/customer-support.yaml --upstream https://api.openai.com
+llm-thorn init                          # writes a ready-to-run starter policy.yaml
+llm-thorn start --policy policy.yaml --upstream https://api.openai.com
 ```
 
 Point your existing app at the proxy — that is the entire integration:
