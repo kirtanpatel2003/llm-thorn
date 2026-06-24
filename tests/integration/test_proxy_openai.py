@@ -155,6 +155,17 @@ async def test_streaming_rejected_clearly(client) -> None:
     assert "streaming" in response.json()["error"]["message"].lower()
 
 
+async def test_oversized_body_rejected(policy, db_path, backend, monkeypatch) -> None:
+    """An inspected body over the size limit gets 413 and never hits upstream."""
+    monkeypatch.setattr("llm_thorn.core.proxy.MAX_INSPECTED_BODY_BYTES", 64)
+    app = create_app(policy, backend, db_path=db_path)
+    client = httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://thorn.test")
+    response = await client.post("/v1/chat/completions", json=_chat_body("x" * 500))
+    assert response.status_code == 413
+    assert response.json()["error"]["code"] == "request_too_large"
+    assert backend.forwarded == []
+
+
 async def test_invalid_json_rejected(client) -> None:
     response = await client.post(
         "/v1/chat/completions",

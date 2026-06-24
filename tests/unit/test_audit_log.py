@@ -43,6 +43,23 @@ def _append(log: AuditLog, session_id: str = "s1", n: int = 1) -> None:
         )
 
 
+class TestEntryQueries:
+    def test_session_window_and_limit_combine(self, db_path: str) -> None:
+        """`report` relies on entries() filtering by session AND window before
+        applying the limit — not slicing first and dropping matches."""
+        log = AuditLog(db_path)
+        _append(log, session_id="noise", n=5)
+        _append(log, session_id="target", n=3)
+        rows = log.entries(
+            session_id="target",
+            since=datetime.now(UTC) - timedelta(hours=24),
+            limit=2,
+        )
+        assert len(rows) == 2
+        assert all(e.session_id == "target" for e in rows)
+        log.close()
+
+
 class TestChainIntegrity:
     def test_empty_log_verifies(self, db_path: str) -> None:
         log = AuditLog(db_path)

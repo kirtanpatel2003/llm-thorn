@@ -22,10 +22,16 @@ Thorn is a reverse proxy: you change one `base_url` and your API key flows
 through untouched (Thorn only *hashes* it to group a session — it is never
 logged in the clear).
 
+First create a starter policy (the pip package ships none):
+
+```bash
+llm-thorn init        # writes a ready-to-run policy.yaml (no Ollama needed)
+```
+
 **OpenAI (and any OpenAI-compatible endpoint):**
 
 ```bash
-llm-thorn start --policy policies/customer-support.yaml \
+llm-thorn start --policy policy.yaml \
   --upstream https://api.openai.com --backend openai
 ```
 ```python
@@ -36,7 +42,7 @@ client = openai.OpenAI(base_url="http://localhost:8080/v1")   # keep your OPENAI
 **Anthropic:**
 
 ```bash
-llm-thorn start --policy policies/customer-support.yaml \
+llm-thorn start --policy policy.yaml \
   --upstream https://api.anthropic.com --backend anthropic
 ```
 ```python
@@ -44,10 +50,10 @@ import anthropic
 client = anthropic.Anthropic(base_url="http://localhost:8080")  # keep your ANTHROPIC_API_KEY
 ```
 
-> **No local Ollama?** The semantic (layer 2) and safety (layer 5) layers need
-> one. Set `semantic: false` and `safety: false` under `layers:` in your policy
-> and the other three layers run with zero setup. With Ollama running
-> (`ollama pull llama3.2`), leave them on for the full stack.
+> **No local Ollama?** The starter policy from `llm-thorn init` already has the
+> semantic (layer 2) and safety (layer 5) layers disabled, so it runs anywhere.
+> To get the full stack, install Ollama (`ollama pull llama3.2`) and flip
+> `semantic: true` / `safety: true` under `layers:` in your policy.
 
 ## 3. Try to break it
 

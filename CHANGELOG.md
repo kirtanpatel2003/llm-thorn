@@ -7,6 +7,8 @@ interface only changes on major versions.
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-06-24
+
 ### Changed
 
 - **Renamed the project to `llm-thorn`** (the `thorn` name was taken on PyPI).
@@ -15,9 +17,18 @@ interface only changes on major versions.
   wire API: header prefix `X-LLM-Thorn-*`, health endpoint `/llm-thorn/health`,
   error type `llm_thorn_policy` / codes `llm_thorn_<action>`, and the default
   database filename (`llm-thorn.db`).
+- The package version is now single-sourced from `llm_thorn/__init__.py`
+  (hatch dynamic version) so `pyproject.toml` can no longer drift from it.
 
 ### Added
 
+- **`llm-thorn init`** — scaffolds a ready-to-run starter `policy.yaml`
+  (no Ollama required) so a fresh `pip install` works immediately, since the
+  wheel ships no policy files. The template is validated before it is written.
+  Also exposes `llm_thorn.policy.load_policy_from_text()` for validating a
+  policy held as a string.
+- **Request body-size guard**: an inspected request body larger than 10 MiB is
+  rejected with HTTP 413 instead of being buffered into memory.
 - **Content-safety layer (Layer 5)** — a local LLM judge that scores the
   model's *response* for harmful content (weapons, explosives, drugs, CBRN,
   malware, violence). It defends against harmful-content elicitation —
@@ -45,6 +56,14 @@ interface only changes on major versions.
   dependency review.
 - The adversarial regression suite now gates every commit in CI (it runs
   the non-semantic stack, so no Ollama is needed).
+
+### Fixed
+
+- `llm-thorn audit report` could drop matching rows when `--session` and
+  `--last` were combined: the `--limit` was applied before the session
+  filter. The report now filters by session and time window before limiting.
+- README quickstart shipped a `[placeholder: terminal GIF …]` note; replaced
+  with a real captured block-and-audit transcript.
 
 ## [0.1.0] — 2026-06-12
 

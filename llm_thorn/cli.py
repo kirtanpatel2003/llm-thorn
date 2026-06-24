@@ -14,7 +14,7 @@ from __future__ import annotations
 import re
 import sys
 from collections import Counter
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Annotated
 
@@ -25,7 +25,8 @@ from rich.table import Table
 import llm_thorn
 from llm_thorn.backends import BACKENDS
 from llm_thorn.core.audit import AuditLog
-from llm_thorn.policy.schema import PolicyError, load_policy
+from llm_thorn.policy.schema import PolicyError, load_policy, load_policy_from_text
+from llm_thorn.templates import STARTER_POLICY
 
 app = typer.Typer(
     name="llm-thorn",
@@ -39,6 +40,41 @@ app.add_typer(audit_app, name="audit")
 
 console = Console()
 err_console = Console(stderr=True)
+
+
+@app.command()
+def init(
+    output: Annotated[
+        Path, typer.Option("--output", "-o", help="Where to write the policy file.")
+    ] = Path("./policy.yaml"),
+    force: Annotated[
+        bool, typer.Option("--force", "-f", help="Overwrite the file if it already exists.")
+    ] = False,
+) -> None:
+    """Write a ready-to-run starter policy (no Ollama required).
+
+    Use this right after ``pip install`` — the package ships no policy files,
+    and ``start`` needs one. The generated policy is validated before it is
+    written, so it always loads.
+    """
+    if output.exists() and not force:
+        err_console.print(
+            f"[red]{output} already exists[/red] — pass --force to overwrite, "
+            "or --output to choose another path"
+        )
+        raise typer.Exit(1)
+
+    try:
+        load_policy_from_text(STARTER_POLICY)
+    except PolicyError as exc:  # pragma: no cover — guards against a bad template
+        err_console.print(f"[red]internal error: starter policy is invalid:[/red] {exc}")
+        raise typer.Exit(1) from None
+
+    output.write_text(STARTER_POLICY)
+    console.print(f"[green]✓ wrote starter policy[/green] to [bold]{output}[/bold]")
+    console.print(
+        f"next: [bold]llm-thorn start --policy {output} --upstream https://api.openai.com[/bold]"
+    )
 
 
 @app.command()
@@ -142,15 +178,11 @@ def report(
                 f"[red]invalid --last value {last!r}[/red] — use forms like 30m, 24h, 7d"
             )
             raise typer.Exit(1)
-        since = window
+        since = datetime.now(UTC) - window
 
-    entries = (
-        log.entries_last(since)[:limit]
-        if since is not None
-        else log.entries(session_id=session, limit=limit)
-    )
-    if session is not None and since is not None:
-        entries = [e for e in entries if e.session_id == session]
+    # One query handles every combination of --session and --last, and applies
+    # the limit in SQL so it can't drop matching rows before filtering.
+    entries = log.entries(session_id=session, since=since, limit=limit)
     log.close()
 
     if not entries:

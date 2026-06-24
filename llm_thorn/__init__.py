@@ -20,7 +20,7 @@ Mode 1 (reverse proxy) is started from the CLI: ``llm-thorn start --policy ...``
 
 from llm_thorn.layers.base import BaseLayer
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 
 def __getattr__(name: str) -> object:
