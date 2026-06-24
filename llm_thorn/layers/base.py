@@ -42,7 +42,6 @@ class BaseLayer(ABC):
     @abstractmethod
     def name(self) -> str:
         """Unique identifier used in verdicts, logs, and policy rules."""
-        ...
 
     def inspect_input(
         self,

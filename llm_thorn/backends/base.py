@@ -35,6 +35,7 @@ class AbstractBackend(ABC):
 
     def __init__(self, upstream_url: str, timeout_seconds: float = 120.0) -> None:
         self.upstream_url = upstream_url.rstrip("/")
+        self._upstream_host = httpx.URL(self.upstream_url).host
         self.timeout_seconds = timeout_seconds
         self._client: httpx.AsyncClient | None = None
 
@@ -42,7 +43,6 @@ class AbstractBackend(ABC):
     @abstractmethod
     def name(self) -> str:
         """Backend identifier, e.g. ``"openai"``."""
-        ...
 
     @property
     @abstractmethod
@@ -52,7 +52,6 @@ class AbstractBackend(ABC):
         Requests to other paths are forwarded transparently (model lists,
         embeddings, health checks...).
         """
-        ...
 
     @abstractmethod
     def normalize_request(
@@ -66,12 +65,10 @@ class AbstractBackend(ABC):
         ``raw_body`` must be preserved untouched in ``LLMRequest.raw_body``
         so the proxy can forward it verbatim.
         """
-        ...
 
     @abstractmethod
     def normalize_response(self, raw_body: dict, session_id: str) -> LLMResponse:
         """Convert a provider response body into a normalized LLMResponse."""
-        ...
 
     async def forward(
         self,
@@ -88,9 +85,16 @@ class AbstractBackend(ABC):
         if self._client is None:
             self._client = httpx.AsyncClient(timeout=self.timeout_seconds)
         clean_headers = {k: v for k, v in headers.items() if k.lower() not in self.STRIP_HEADERS}
+        target = f"{self.upstream_url}/{path.lstrip('/')}"
+        # Defense-in-depth: the upstream host is operator-pinned via --upstream.
+        # A crafted request path must never redirect the call to another host.
+        if httpx.URL(target).host != self._upstream_host:
+            raise ValueError(
+                f"refusing to forward: path would change the upstream host ({target!r})"
+            )
         response = await self._client.request(
             method,
-            f"{self.upstream_url}/{path.lstrip('/')}",
+            target,
             json=raw_body if method in ("POST", "PUT", "PATCH") else None,
             headers=clean_headers,
         )

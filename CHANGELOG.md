@@ -65,6 +65,13 @@ interface only changes on major versions.
 - README quickstart shipped a `[placeholder: terminal GIF …]` note; replaced
   with a real captured block-and-audit transcript.
 
+### Security
+
+- The backend forwarder now pins the upstream host: a crafted request path can
+  no longer redirect a forwarded request to a different host (defense-in-depth).
+  Resolves the open CodeQL code-scanning findings (incl. a partial-SSRF report),
+  alongside lint/quality cleanups across the package.
+
 ## [0.1.0] — 2026-06-12
 
 Initial release.
