@@ -15,7 +15,7 @@ jobs:
     name: dependency-audit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
           python-version: "3.11"
@@ -27,8 +27,17 @@ jobs:
   secret-scan:
     name: secret-scan
     runs-on: ubuntu-latest
+    # Dependabot PRs run with a read-only GITHUB_TOKEN, which gitleaks-action
+    # cannot use to scan a pull request (it 403s on the commits API). Those PRs
+    # only bump dependency versions and can't introduce secrets, and every
+    # commit that lands on main is still scanned by the push-triggered run
+    # above — so skip the PR scan for Dependabot rather than fail it.
+    if: github.actor != 'dependabot[bot]'
+    permissions:
+      contents: read
+      pull-requests: write   # let gitleaks annotate findings on human PRs
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0   # scan full history, not just the latest commit
       - name: Scan for committed secrets
