@@ -95,6 +95,29 @@ llm-thorn audit report --db ./llm-thorn.db --last 24h
 llm-thorn audit verify --db ./llm-thorn.db   # cryptographic integrity check
 ```
 
+### Anthropic & local models
+
+Same proxy, one flag — Thorn speaks Anthropic's Messages API natively:
+
+```bash
+llm-thorn start --policy policies/customer-support.yaml \
+  --upstream https://api.anthropic.com --backend anthropic
+```
+
+```python
+import anthropic
+
+client = anthropic.Anthropic(base_url="http://localhost:8080")  # was api.anthropic.com
+# your ANTHROPIC_API_KEY passes straight through to Anthropic, untouched
+```
+
+> **No Ollama? Disable two layers and go.** The **semantic** (layer 2) and
+> **safety** (layer 5) layers call a local [Ollama](https://ollama.com). If you
+> aren't running one, set `semantic: false` and `safety: false` under `layers:`
+> in your policy — the heuristic, context, and output layers need zero local
+> setup and still catch signature attacks, multi-turn escalation, and output/PII
+> leakage.
+
 ## Integration Modes
 
 **Mode 1 — Reverse proxy** (zero code change):
